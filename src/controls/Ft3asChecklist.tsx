@@ -75,7 +75,8 @@ export interface Ft3asChecklistState {
 // }
 
 interface Ft3asChecklistProps {
-  checklistDoc?: IChecklistDocument
+  checklistDoc?: IChecklistDocument;
+  questionAnswered?: (percentComplete:number)=>void;
 }
 
 export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asChecklistState> {

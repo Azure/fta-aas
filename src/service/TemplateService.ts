@@ -9,7 +9,7 @@ class TemplateService {
 
     parsed!: IParseResult;
 
-    async loadData(){
+    async init(){
         var files = await ghDownloader.getAllFiles();
         this.parsed = ghParser.parse(files);
     }

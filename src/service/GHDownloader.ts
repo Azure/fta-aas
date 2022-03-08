@@ -9,4 +9,6 @@ class GHDownloader {
     }
 }
 
-export default GHDownloader;
+const ghDownloaderInstance = new GHDownloader();
+
+export default ghDownloaderInstance;

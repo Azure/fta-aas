@@ -2,16 +2,16 @@ import { elementContains } from "@fluentui/react";
 import { stringify } from "querystring";
 import { IChecklistDocument } from "../model/IChecklistDocument";
 import { ICheckList, IParseResult } from "../model/IParseResult";
-import GHDownloader from "./GHDownloader";
-import GHParser from "./GHParser";
+import ghDownloader  from "./GHDownloader";
+import ghParser from "./GHParser";
 
 class TemplateService {
 
     parsed!: IParseResult;
 
-    init(ghDownloader : GHDownloader, ghParser : GHParser){
-        var result = ghDownloader.getAllFiles();
-        this.parsed = ghParser.parse(result);
+    async loadData(){
+        var files = await ghDownloader.getAllFiles();
+        this.parsed = ghParser.parse(files);
     }
 
     getAvailableTemplates(): Promise<string[]> {

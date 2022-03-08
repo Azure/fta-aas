@@ -1,6 +1,19 @@
+import { elementContains } from "@fluentui/react";
+import { stringify } from "querystring";
 import { IChecklistDocument } from "../model/IChecklistDocument";
+import { ICheckList, IParseResult } from "../model/IParseResult";
+import GHDownloader from "./GHDownloader";
+import GHParser from "./GHParser";
 
 class TemplateService {
+
+    parsed!: IParseResult;
+
+    init(ghDownloader : GHDownloader, ghParser : GHParser){
+        var result = ghDownloader.getAllFiles();
+        this.parsed = ghParser.parse(result);
+    }
+
     getAvailableTemplates(): Promise<string[]> {
         // TODO: Get list of templates from github.com
 
@@ -11,6 +24,25 @@ class TemplateService {
             "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/multitenancy_checklist.en.json",
             "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/security_checklist.en.json"]);
     }
+
+    getAvailableTemplateNames(): string[] {
+
+        var result : string[] = [];
+        this.parsed.checklists.forEach((element: ICheckList) => {
+            result.push(element.name);
+        });
+        return result;
+    }
+
+    getAvailableLanguagesforTemplate(checklistname : string): string[] {
+        for (var element of this.parsed.checklists){
+            if ( element.name === checklistname) {
+                return element.languages;
+            }
+        }
+        return [];
+    }
+
     async openTemplate(url: string): Promise<IChecklistDocument> {
         const response = await fetch(url);
         return (await response.json()) as IChecklistDocument;

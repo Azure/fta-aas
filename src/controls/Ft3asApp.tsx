@@ -6,6 +6,7 @@ import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
 import { Ft3asToolbar } from "./Ft3asToolbar";
+import { Ft3asProgress } from "./Ft3asProgress";
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -22,6 +23,7 @@ export default function Ft3asApp() {
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [availableTemplates, setAvailableTemplates] = useState<string[]>([]);
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
+    const [percentComplete, setPercentComplete] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,8 +71,14 @@ export default function Ft3asApp() {
                 onSelectTemplateClick={e => {
                     setShowSelectTemplate(true);
                 }} />
+            <Ft3asProgress
+                percentComplete={percentComplete}
+            />
             <FocusZone>
-                <Ft3asChecklist checklistDoc={checklistDoc}></Ft3asChecklist>
+                <Ft3asChecklist
+                    checklistDoc={checklistDoc}
+                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}>
+                </Ft3asChecklist>
             </FocusZone>
             <Ft3AsTemplateSelector
                 availableTemplates={availableTemplates}

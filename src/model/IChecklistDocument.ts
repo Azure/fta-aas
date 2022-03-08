@@ -1,16 +1,16 @@
 import { ICheckItemAnswered } from "./ICheckItem";
 
-interface ICategory {
+export interface ICategory {
     name: string;
 }
-interface IMetadata {
+export interface IMetadata {
     name: string;
 }
-interface IStatus {
+export interface IStatus {
     name: string;
     description: string;
 }
-interface ISeverity {
+export interface ISeverity {
     name: string;
     description: string;
 }

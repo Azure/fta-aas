@@ -7,6 +7,7 @@ import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
 import { Ft3asToolbar } from "./Ft3asToolbar";
 import { Ft3asProgress } from "./Ft3asProgress";
+import Ft3asFilters from "./Ft3asFilters";
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -23,6 +24,7 @@ export default function Ft3asApp() {
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [availableTemplates, setAvailableTemplates] = useState<string[]>([]);
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
+    const [showFilters, setShowFilters] = useState(true);
     const [percentComplete, setPercentComplete] = useState(0);
 
     useEffect(() => {
@@ -70,10 +72,17 @@ export default function Ft3asApp() {
             <Ft3asToolbar
                 onSelectTemplateClick={e => {
                     setShowSelectTemplate(true);
-                }} />
+                }}
+                onFilter={e=>{setShowFilters(true)}} />
             <Ft3asProgress
                 percentComplete={percentComplete}
             />
+            {checklistDoc ? (<Ft3asFilters 
+            isOpen={showFilters} 
+            checklistDoc={checklistDoc} 
+            categoriesChanged={() => alert('categories changed')}
+            onClose={()=>setShowFilters(false)}></Ft3asFilters>) : (<></>)}
+
             <FocusZone>
                 <Ft3asChecklist
                     checklistDoc={checklistDoc}
@@ -84,7 +93,7 @@ export default function Ft3asApp() {
                 availableTemplates={availableTemplates}
                 isOpen={showSelectTemplate}
                 onTemplateSelected={onTemplateSelected}
-                onClose={() => { alert('close?'); setShowSelectTemplate(false); }} />
+                onClose={() => { setShowSelectTemplate(false); }} />
         </Stack>
     );
 

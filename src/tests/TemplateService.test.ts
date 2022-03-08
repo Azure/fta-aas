@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import TemplateServiceInstance from './service/TemplateService';
-import GHDownloader from './service/GHDownloader';
-import GHParser from './service/GHParser';
-import { IGHFileList, ITreeItem } from './model/IGHFileList'
-import { ICheckList, IParseResult } from './model/IParseResult';
+import TemplateServiceInstance from '../service/TemplateService';
+import GHDownloader from '../service/GHDownloader';
+import GHParser from '../service/GHParser';
+import { IGHFileList, ITreeItem } from '../model/IGHFileList'
+import { ICheckList, IParseResult } from '../model/IParseResult';
 
-jest.mock('./service/GHDownloader');
-jest.mock('./service/GHParser');
+jest.mock('../service/GHDownloader');
+jest.mock('../service/GHParser');
 
 it('Download checklist template', () => {
     const checklistSampleUrl = 'https://github.com/Azure/review-checklists/blob/main/checklists/aks_checklist.en.json';

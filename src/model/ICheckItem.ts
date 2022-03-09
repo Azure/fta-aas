@@ -21,6 +21,8 @@ export interface ICheckItem {
     ha: number;
     severity: Severity;
     link?: URL;
+    graph_success?: string;
+    graph_failure?: string;
 }
 
 export interface ICheckItemAnswered extends ICheckItem {

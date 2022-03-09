@@ -37,7 +37,10 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
 
     const onOk = () => {
         if (selectedLanguageItem && selectedTechItem){
+            console.log(selectedTechItem.text);
+            console.log(selectedLanguageItem.text);
             var url : string = TemplateServiceInstance.getPathforTechAndLanguage(selectedTechItem.text, selectedLanguageItem.text);
+            console.log(url);
             props.onTemplateSelected(url);
         }
         // props.onClose();

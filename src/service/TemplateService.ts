@@ -14,8 +14,9 @@ class TemplateService {
     }
 
     getPathforTechAndLanguage(tech : string, language : string) : string {
-        var the_url = this.files.tree.find(ti => ti.path.indexOf(tech) > 0 && ti.path.indexOf(language) > 0)?.url;
-        console.log(the_url);
+        console.log(this.files);
+        var the_url = this.files.tree.find(ti => ti.path.match(tech) && ti.path.match(language))?.url;
+        console.log('found url: ' + the_url);
         return the_url ? the_url.toString() : "" ;
     }
 

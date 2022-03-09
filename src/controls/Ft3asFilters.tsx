@@ -1,6 +1,7 @@
 import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
 import * as React from 'react';
-import { ICategory, IChecklistDocument, ISeverity } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
+import { ISeverity } from '../model/ISeverity';
 
 
 const getTextFromItem = (item: ITag) => item.name;

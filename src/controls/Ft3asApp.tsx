@@ -1,19 +1,23 @@
 import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
 import { useEffect, useState } from "react";
-import { ICheckItemAnswered, Status } from "../model/ICheckItem";
-import { ICategory, IChecklistDocument, ISeverity } from "../model/IChecklistDocument";
+import { ICheckItemAnswered } from "../model/ICheckItem";
+import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
 import { Ft3asToolbar } from "./Ft3asToolbar";
 import { Ft3asProgress } from "./Ft3asProgress";
 import Ft3asFilters from "./Ft3asFilters";
+import { ISeverity } from "../model/ISeverity";
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
     root: {
-        width: '960px',
-        margin: '0 auto',
+        // width: '960px',
+        marginTop: '10px',
+        marginLeft: '25px',
+        marginRight: '25px',
+        // margin: '100 auto',
         textAlign: 'center',
         color: '#605e5c',
     },
@@ -61,7 +65,7 @@ export default function Ft3asApp() {
             items: doc.items.map<ICheckItemAnswered>((i: ICheckItemAnswered) => {
                 const defaultedI: ICheckItemAnswered = {
                     ...i,
-                    status: i.status ?? Status.NotVerified
+                    status: i.status ?? doc.status[0]
                 }
                 return defaultedI;
             })

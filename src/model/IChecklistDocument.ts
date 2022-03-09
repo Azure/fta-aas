@@ -1,4 +1,6 @@
 import { ICheckItemAnswered } from "./ICheckItem";
+import { ISeverity } from "./ISeverity";
+import { IStatus } from "./IStatus";
 
 export interface ICategory {
     name: string;
@@ -6,14 +8,8 @@ export interface ICategory {
 export interface IMetadata {
     name: string;
 }
-export interface IStatus {
-    name: string;
-    description: string;
-}
-export interface ISeverity {
-    name: string;
-    description: string;
-}
+
+
 export interface IChecklistDocument {
     categories: ICategory[];
     items: ICheckItemAnswered[];

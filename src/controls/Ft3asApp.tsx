@@ -26,7 +26,8 @@ export default function Ft3asApp() {
     useEffect(() => {
         const fetchData = async () => {
             await changeTemplate('https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json');
-            const templates = await TemplateServiceInstance.getAvailableTemplates();
+            await TemplateServiceInstance.init();
+            const templates = await TemplateServiceInstance.getAvailableTemplateNames();
             console.log('template count ' + templates.length);
             setAvailableTemplates(templates);
         }

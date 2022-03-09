@@ -90,7 +90,7 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
                         </Stack.Item>
                         <Stack.Item align="start">
                             <Text variant={'large'}>
-                                {`Severity: ${props.item.severity.name}`}
+                                {`Severity: ${props.item.severity}`}
                             </Text>
                         </Stack.Item>
                         <Stack.Item align="start">

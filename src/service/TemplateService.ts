@@ -1,5 +1,3 @@
-import { elementContains } from "@fluentui/react";
-import { stringify } from "querystring";
 import { IChecklistDocument } from "../model/IChecklistDocument";
 import { ICheckList, IParseResult } from "../model/IParseResult";
 import ghDownloader  from "./GHDownloader";
@@ -8,10 +6,17 @@ import ghParser from "./GHParser";
 class TemplateService {
 
     parsed!: IParseResult;
+    files!: import("/workspaces/fta-aas/src/model/IGHFileList").IGHFileList;
 
     async init(){
-        var files = await ghDownloader.getAllFiles();
-        this.parsed = ghParser.parse(files);
+        this.files = await ghDownloader.getAllFiles();
+        this.parsed = ghParser.parse(this.files);
+    }
+
+    getPathforTechAndLanguage(tech : string, language : string) : string {
+        var the_url = this.files.tree.find(ti => ti.path.indexOf(tech) > 0 && ti.path.indexOf(language) > 0)?.url;
+        console.log(the_url);
+        return the_url ? the_url.toString() : "" ;
     }
 
     getAvailableTemplates(): Promise<string[]> {
@@ -35,6 +40,7 @@ class TemplateService {
     }
 
     getAvailableLanguagesforTemplate(checklistname : string): string[] {
+        console.log(this.parsed.checklists);
         for (var element of this.parsed.checklists){
             if ( element.name === checklistname) {
                 return element.languages;

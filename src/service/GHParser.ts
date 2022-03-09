@@ -23,8 +23,8 @@ class GHParser {
     
     findLanguage(path: string) {
         var startIndex = path.indexOf('.');
-        var endIndex = path.indexOf('.', startIndex);
-        return path.slice(startIndex, endIndex-startIndex);
+        var endIndex = path.indexOf('.', startIndex+1);
+        return path.slice(startIndex +1, endIndex);
     }
 
     findTechnology(element : string) : string {

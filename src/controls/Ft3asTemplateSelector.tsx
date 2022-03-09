@@ -1,26 +1,45 @@
 import { DefaultButton, Dropdown, IDropdownOption, Panel, PrimaryButton } from "@fluentui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import TemplateServiceInstance from "../service/TemplateService";
 
 const buttonStyles = { root: { marginRight: 8 } };
 
 interface Ft3AsTemplateSelectorProps {
     isOpen: boolean;
-    availableTemplates: string[];
     onTemplateSelected: (templateUrl?: string) => void;
     onClose: () => void;
 }
 
 export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps) {
     const { isOpen } = props;
-    // const [availableTemplates, setAvailableTemplates] = useState<IDropdownOption[]>([]);
-    const availableTemplates = props.availableTemplates.map<IDropdownOption>(t => {
-        return {
-            key: t, text: t
+    const [availableTechnologies, setAvailableTechnologies] = useState<IDropdownOption[]>([]);
+    const [availableLanguages, setAvailableLanguages] = useState<IDropdownOption[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await TemplateServiceInstance.init();
+            const technologyNames = TemplateServiceInstance.getAvailableTemplateNames();
+            setAvailableTechnologies(technologyNames.map<IDropdownOption>(t => {
+                return {
+                    key: t, text: t
+                }
+            }));
         }
-    });
-    const [selectedItem, setSelectedItem] = useState<IDropdownOption>();
+        fetchData()
+            .then(() => console.log('loaded'))
+            .catch(reason => {
+                console.error(reason);
+            })
+    }, []);
+
+    const [selectedTechItem, setSelectedTechItem] = useState<IDropdownOption>();
+    const [selectedLanguageItem, setSelectedLanguageItem] = useState<IDropdownOption>();
+
     const onOk = () => {
-        props.onTemplateSelected(selectedItem?.key as string | undefined);
+        if (selectedLanguageItem && selectedTechItem){
+            var url : string = TemplateServiceInstance.getPathforTechAndLanguage(selectedTechItem.text, selectedLanguageItem.text);
+            props.onTemplateSelected(url);
+        }
         // props.onClose();
     }
 
@@ -34,24 +53,45 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
             </div>
         ), [onOk, props.onClose]);
 
-    const onChange = (event: FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
-        setSelectedItem(item);
+    const onChangeOfTechnology = (event: FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
+        setSelectedTechItem(item);
+        if (item) {
+            console.log(item.text);
+            const languages = TemplateServiceInstance.getAvailableLanguagesforTemplate(item.text);
+            console.log(languages);
+            setAvailableLanguages(languages.map<IDropdownOption>(t => {
+                return {
+                    key: t, text: t
+                };
+            }));
+        }
+    }
+
+    const onChangeOfLanguage = (event: FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
+        setSelectedLanguageItem(item);
     };
 
     return (<Panel
         isOpen={isOpen}
         onDismiss={props.onClose}
-        headerText="Select a checklist template"
+        headerText="Select a checklist technology"
         closeButtonAriaLabel="Close"
         onRenderFooterContent={onRenderFooterContent}
         isFooterAtBottom={true}
     >
-        <p>Template list</p>
+        <p>Technology list</p>
         <Dropdown
             label="Select template"
-            selectedKey={selectedItem ? selectedItem.key : undefined}
-            options={availableTemplates}
-            placeholder="Select a template"
-            onChange={onChange} />
+            selectedKey={selectedTechItem ? selectedTechItem.key : undefined}
+            options={availableTechnologies}
+            placeholder="Select a technology"
+            onChange={onChangeOfTechnology} />
+        <p>Language list</p>
+        <Dropdown
+            label="Select language"
+            selectedKey={selectedLanguageItem ? selectedLanguageItem.key : undefined}
+            options={availableLanguages}
+            placeholder="Select a language"
+            onChange={onChangeOfLanguage} />        
     </Panel>)
 }

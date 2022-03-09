@@ -51,6 +51,8 @@ it('Can do this for multiple tech and languages', () => {
     var abcChecklist = result.checklists.find(cl => cl.name === "abc");
     var xyzChecklist = result.checklists.find(cl => cl.name === "xyz");
     expect(aksChecklist?.languages.length).toBe(2);
+    expect(aksChecklist?.languages).toContain('en');
+    expect(aksChecklist?.languages).toContain('ko');
     expect(avdChecklist?.languages.length).toBe(2);
     expect(abcChecklist?.languages.length).toBe(2);
     expect(xyzChecklist?.languages.length).toBe(1);

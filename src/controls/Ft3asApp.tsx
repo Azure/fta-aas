@@ -20,16 +20,11 @@ const stackStyles: Partial<IStackStyles> = {
 export default function Ft3asApp() {
 
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
-    const [availableTemplates, setAvailableTemplates] = useState<string[]>([]);
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             await changeTemplate('https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json');
-            await TemplateServiceInstance.init();
-            const templates = await TemplateServiceInstance.getAvailableTemplateNames();
-            console.log('template count ' + templates.length);
-            setAvailableTemplates(templates);
         }
         fetchData()
             .then(() => console.log('loaded'))
@@ -48,6 +43,7 @@ export default function Ft3asApp() {
         }
         setShowSelectTemplate(false);
     }
+
     const changeTemplate = async (templateUrl: string) => {
         const doc = await TemplateServiceInstance.openTemplate(templateUrl);
 
@@ -74,7 +70,6 @@ export default function Ft3asApp() {
                 <Ft3asChecklist checklistDoc={checklistDoc}></Ft3asChecklist>
             </FocusZone>
             <Ft3AsTemplateSelector
-                availableTemplates={availableTemplates}
                 isOpen={showSelectTemplate}
                 onTemplateSelected={onTemplateSelected}
                 onClose={() => { alert('close?'); setShowSelectTemplate(false); }} />

@@ -9,6 +9,8 @@ const overflowProps: IButtonProps = { ariaLabel: 'More commands' };
 interface Ft3asToolbarProps {
     onSelectTemplateClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onFilter?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
 
 export function Ft3asToolbar(props: Ft3asToolbarProps) {
@@ -25,39 +27,13 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             key: 'uploadFile',
             text: 'Upload responses',
             iconProps: { iconName: 'Upload' },
-            onClick: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
-                ev?.persist();
-
-                Promise.resolve().then(() => {
-                    const inputElement = document.createElement('input');
-                    inputElement.style.visibility = 'hidden';
-                    inputElement.setAttribute('type', 'file');
-
-                    document.body.appendChild(inputElement);
-
-                    const target = ev?.target as HTMLElement | undefined;
-
-                    if (target) {
-                        setVirtualParent(inputElement, target);
-                    }
-
-                    inputElement.click();
-
-                    if (target) {
-                        setVirtualParent(inputElement, null);
-                    }
-
-                    setTimeout(() => {
-                        inputElement.remove();
-                    }, 10000);
-                });
-            },
+            onClick: props.onUploadReviewClick,
         },
         {
             key: 'download',
             text: 'Download',
             iconProps: { iconName: 'Download' },
-            onClick: () => console.log('Download'),
+            onClick: props.onDownloadReviewClick
         },
         {
             key: 'excel',

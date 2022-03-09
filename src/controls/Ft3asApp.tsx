@@ -149,7 +149,7 @@ export default function Ft3asApp() {
 
     return (
         <BrowserRouter>
-            <TelemetryProvider instrumentationKey="2c36df6e-7df9-4aed-91d8-4a345ce86979" after={() => { appInsights = getAppInsights() }}>
+            <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
                     <Ft3asToolbar
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}

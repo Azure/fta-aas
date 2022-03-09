@@ -10,6 +10,7 @@ interface Ft3asToolbarProps {
     onSelectTemplateClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onUploadGraphQResultClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
 
 export function Ft3asToolbar(props: Ft3asToolbarProps) {
@@ -40,7 +41,12 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             iconProps: { iconName: 'ExcelDocument' },
             onClick: () => console.log('Export Excel'),
         },
-
+        {
+            key: 'graph',
+            text: 'Import Graph Query',
+            iconProps: { iconName: 'Cloudy' },
+            onClick: () => props.onUploadGraphQResultClick
+        }
     ];
 
     const _overflowItems: ICommandBarItemProps[] = [

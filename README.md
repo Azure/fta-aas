@@ -6,6 +6,10 @@ This is a [Create React App](https://github.com/facebook/create-react-app) based
 
 In the project directory, you can run:
 
+### `yarn install`
+
+This is the first step you should execute to download all dependencies. Usually you only need to run this command once.
+
 ### `yarn start`
 
 Runs the app in the development mode.<br>

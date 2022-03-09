@@ -40,7 +40,7 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
             console.log(selectedTechItem.text);
             console.log(selectedLanguageItem.text);
             var url : string = TemplateServiceInstance.getPathforTechAndLanguage(selectedTechItem.text, selectedLanguageItem.text);
-            console.log(url);
+            console.log('URL: ' + url);
             props.onTemplateSelected(url);
         }
         // props.onClose();

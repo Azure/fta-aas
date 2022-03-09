@@ -14,10 +14,8 @@ class TemplateService {
     }
 
     getPathforTechAndLanguage(tech : string, language : string) : string {
-        console.log(this.files);
-        var the_url = this.files.tree.find(ti => ti.path.match(tech) && ti.path.match(language))?.url;
-        console.log('found url: ' + the_url);
-        return the_url ? the_url.toString() : "" ;
+        //MAJOR HACK :D (because GH api does not give correct url path :\ )
+        return "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/" + tech + "_checklist." + language + ".json"
     }
 
     getAvailableTemplates(): Promise<string[]> {

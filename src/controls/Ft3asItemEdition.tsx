@@ -1,5 +1,6 @@
 import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox } from "@fluentui/react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { setTokenSourceMapRange } from "typescript";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { IStatus } from "../model/IStatus";
 
@@ -20,28 +21,39 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
     const statusOptions: IComboBoxOption[] = props.allowedStatus.map<IComboBoxOption>(s => {
         return {
             key: s.name,
-            text: s.description
+            text: s.name
         }
     });
-    const [currentItem, setCurrentItem] = useState(props.item);
-    const onResponseChanged = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
-        setCurrentItem({ ...currentItem, comments: value });
+    const [comments, setComments] = useState(props.item.comments);
+    const [itemStatus, setItemStatus] = useState(props.item.status);
+    // const [currentItem, setCurrentItem] = useState(props.item);
+
+    useEffect(() => {
+        setComments(props.item.comments);
+        setItemStatus(props.item.status);
+    }, [props.item]);
+
+    const onCommentsChanged = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
+        setComments(value);
     }
 
     const onStatusChanged = (event: FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string) => {
-        if (value) {
-            const status: IStatus = {
-                name: value,
-                description: value
-            }
-            setCurrentItem({ ...currentItem, status: status });
+
+        if (option) {
+            const index = props.allowedStatus.findIndex(s => s.name === option.key);
+            if (index !== -1) {
+                const status = props.allowedStatus[index];
+                setItemStatus(status);
+            } else{
+                setItemStatus(undefined);
+            }            
         } else {
-            setCurrentItem({ ...currentItem, status: undefined });
+            setItemStatus(undefined);
         }
     }
     const onSave = () => {
         if (props.onItemChanged) {
-            props.onItemChanged(currentItem);
+            props.onItemChanged({...props.item, comments: comments, status: itemStatus});
         }
     }
     const onDiscard = () => {
@@ -85,17 +97,17 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
                     <Stack horizontal={true} wrap tokens={horizontalGapStackTokens} >
                         <Stack.Item grow={3}>
                             <TextField
-                                label="Response"
+                                label="Comments"
                                 multiline
                                 rows={3}
-                                value={currentItem.comments}
-                                onChange={onResponseChanged} />
+                                value={comments}
+                                onChange={onCommentsChanged} />
                         </Stack.Item>
                         <Stack.Item grow={1}>
                             <ComboBox
                                 label="Status"
                                 options={statusOptions}
-                                defaultSelectedKey={props.item.status?.name}
+                                selectedKey={itemStatus?.name}
                                 onChange={onStatusChanged} />
                         </Stack.Item>
                     </Stack>

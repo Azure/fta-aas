@@ -55,8 +55,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   constructor(props: Ft3asChecklistProps) {
     super(props);
 
-    console.log('items ' + props.checklistDoc?.items.length);
-
     const columns: IColumn[] = [
       {
         key: 'category',
@@ -153,7 +151,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       },
     });
 
-    console.log('check items ' + this.props.checklistDoc?.items.length);
     const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities);
     this.state = {
       allItems: items,
@@ -169,7 +166,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     console.log('receiving properties ' + props.visibleCategories + ' \n' + props.visibleSeverities);
 
     const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities);
-    console.log(items);
+
     this.setState({
       items: items
     });
@@ -184,16 +181,23 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase())) !== -1);
   }
   private onItemChanged(item: ICheckItemAnswered) {
-    console.debug(item);
-    // const index = this.state.allItems.findIndex(c => c.guid === item.guid);
-    // if (index !== -1) {
-    //   let newItems = this.state.allItems;
-    //   newItems[index] = item;
-    //   this.setState({
-    //     allItems: { ...newItems }
-    //   });
-    // }
+    console.debug(`comment: ${item.comments} status: ${item.status}`)
+    const index = this.props.checklistDoc?.items.findIndex(c => c.guid === item.guid) ?? -1;
+    if (index !== -1) {
+      let newItems = this.props.checklistDoc?.items ?? [];
+      newItems[index] = item;
+      let items = this.filterSourceItems(newItems, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities);
+
+      this.setState({
+        allItems: { ...newItems },
+        items: items
+      });
+    } else {
+      console.error(`index for ${item.guid} not found`);
+    }
   }
+
+
 
   public render() {
     const { columns, items, selectionDetails, announcedMessage, currentItem } = this.state;
@@ -205,7 +209,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             <Ft3asItemEdition
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
-              onItemChanged={this.onItemChanged} />
+              onItemChanged={this.onItemChanged.bind(this)} />
 
           ) : <></>}
         </Stack>

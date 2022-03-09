@@ -142,8 +142,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
     ];
 
+
     this._selection = new Selection({
       onSelectionChanged: () => {
+        console.debug('onSelectionChanged');
         this.setState({
           selectionDetails: this._getSelectionDetails(),
           currentItem: this._selection.getSelection()[0] as ICheckItemAnswered
@@ -197,6 +199,24 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
   }
 
+  private onNext(currentGuid: string) {
+    const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);
+    console.debug(`Current index for ${currentGuid} -> (${currentIndex}/${this.state.items.length})`)
+    if (currentIndex !== -1 && currentIndex < this.state.items.length - 1) {
+      this._selection.setIndexSelected(currentIndex, false, false);
+      this._selection.setIndexSelected(currentIndex + 1, true, true);
+    }
+  }
+
+  private onPrevious(currentGuid: string) {
+    const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);
+    console.debug(`Current index for ${currentGuid} -> (${currentIndex}/${this.state.items.length})`)
+    if (currentIndex !== -1 && currentIndex > 1) {
+      this._selection.setIndexSelected(currentIndex, false, false);
+      this._selection.setIndexSelected(currentIndex - 1, true, true);
+    }
+  }
+
 
 
   public render() {
@@ -209,7 +229,9 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             <Ft3asItemEdition
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
-              onItemChanged={this.onItemChanged.bind(this)} />
+              onItemChanged={this.onItemChanged.bind(this)}
+              onNext={this.onNext.bind(this)}
+              onPrevious={this.onPrevious.bind(this)} />
 
           ) : <></>}
         </Stack>
@@ -225,13 +247,13 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             <Label>{`Total: ${this.state.allItems.length} Filtered: ${items.length} `}</Label>
             {announcedMessage ? <Announced message={announcedMessage} /> : undefined}
 
-            <MarqueeSelection selection={this._selection}>
+            <MarqueeSelection selection={this._selection} >
               <DetailsList
                 items={items}
                 columns={columns}
                 selectionMode={SelectionMode.single}
                 getKey={this._getKey}
-                setKey="multiple"
+                setKey="guid"
                 layoutMode={DetailsListLayoutMode.justified}
                 isHeaderVisible={true}
                 selection={this._selection}
@@ -262,9 +284,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   //   }
   // }
 
-  private _getKey(item: any, index?: number): string {
-    console.debug('_getkey ' + item);
-    return index?.toString() ?? '';
+  private _getKey(item: ICheckItemAnswered, index?: number): string {
+    return item.guid;
+    // console.debug('_getkey ' + item);
+    // return index?.toString() ?? '';
   }
 
   private doFilter(item: ICheckItemAnswered, filterText: string): boolean {

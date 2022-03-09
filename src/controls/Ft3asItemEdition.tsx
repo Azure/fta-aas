@@ -15,6 +15,8 @@ interface Ft3asItemEditionProps {
     allowedStatus: IStatus[];
     onItemChanged?: (itemchanged: ICheckItemAnswered) => void;
     onDiscard?: () => void;
+    onNext?: (currentGuid: string) => void;
+    onPrevious?: (currentGuid: string) => void;
 }
 export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
     const statusOptions: IComboBoxOption[] = props.allowedStatus.map<IComboBoxOption>(s => {
@@ -43,16 +45,16 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
             if (index !== -1) {
                 const status = props.allowedStatus[index];
                 setItemStatus(status);
-            } else{
+            } else {
                 setItemStatus(undefined);
-            }            
+            }
         } else {
             setItemStatus(undefined);
         }
     }
     const onSave = () => {
         if (props.onItemChanged) {
-            props.onItemChanged({...props.item, comments: comments, status: itemStatus});
+            props.onItemChanged({ ...props.item, comments: comments, status: itemStatus });
         }
     }
     const onDiscard = () => {
@@ -60,12 +62,23 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
             props.onDiscard();
         }
     }
+    const onPrevious = () => {
+        if (props.onPrevious) {
+            props.onPrevious(props.item.guid);
+        }
+    }
+
+    const onNext = () => {
+        if (props.onNext) {
+            props.onNext(props.item.guid);
+        }
+    }
     return (
         <Stack horizontal tokens={{
             childrenGap: 20
         }}>
             <Stack.Item>
-                <DefaultButton text="Previous"></DefaultButton>
+                <DefaultButton text="Previous" onClick={onPrevious}></DefaultButton>
             </Stack.Item>
             <Stack.Item grow={4}>
                 <FocusZone>
@@ -119,7 +132,7 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
                 </FocusZone>
             </Stack.Item>
             <Stack.Item>
-                <DefaultButton text="Next"></DefaultButton>
+                <DefaultButton text="Next" onClick={onNext}></DefaultButton>
             </Stack.Item>
         </Stack>);
 

@@ -265,7 +265,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   private _getKey(item: any, index?: number): string {
     console.debug('_getkey ' + item);
     return index?.toString() ?? '';
-    return item.key;
   }
 
   private doFilter(item: ICheckItemAnswered, filterText: string): boolean {

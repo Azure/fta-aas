@@ -1,7 +1,7 @@
 import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
 import { useEffect, useState } from "react";
 import { ICheckItemAnswered, Status } from "../model/ICheckItem";
-import { IChecklistDocument } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument, ISeverity } from "../model/IChecklistDocument";
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
@@ -26,6 +26,8 @@ export default function Ft3asApp() {
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
     const [percentComplete, setPercentComplete] = useState(0);
+    const [visibleCategories, setVisibleCategories]=useState<ICategory[]>();
+    const [visibleSeverities, setVisibleSeverities]=useState<ISeverity[]>();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,6 +66,8 @@ export default function Ft3asApp() {
                 return defaultedI;
             })
         });
+        setVisibleCategories(doc.categories);
+        setVisibleSeverities(doc.severities);
     }
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
@@ -80,13 +84,17 @@ export default function Ft3asApp() {
             {checklistDoc ? (<Ft3asFilters 
             isOpen={showFilters} 
             checklistDoc={checklistDoc} 
-            categoriesChanged={() => alert('categories changed')}
+            categoriesChanged={setVisibleCategories}
+            severitiesChanged={setVisibleSeverities}
             onClose={()=>setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
             <FocusZone>
                 <Ft3asChecklist
                     checklistDoc={checklistDoc}
-                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}>
+                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
+                    visibleCategories={visibleCategories}
+                    visibleSeverities={visibleSeverities}
+                    >
                 </Ft3asChecklist>
             </FocusZone>
             <Ft3AsTemplateSelector

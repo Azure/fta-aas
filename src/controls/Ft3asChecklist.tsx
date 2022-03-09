@@ -6,7 +6,7 @@ import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
 import TemplateServiceInstance from '../service/TemplateService';
-import { IChecklistDocument } from '../model/IChecklistDocument';
+import { ICategory, IChecklistDocument, ISeverity } from '../model/IChecklistDocument';
 import { Label } from '@fluentui/react';
 
 const classNames = mergeStyleSets({
@@ -54,6 +54,7 @@ const controlStyles = {
 
 export interface Ft3asChecklistState {
   columns: IColumn[];
+  allItems: ICheckItemAnswered[];
   items: ICheckItemAnswered[];
   selectionDetails: string;
   isModalSelection: boolean;
@@ -61,26 +62,16 @@ export interface Ft3asChecklistState {
   announcedMessage?: string;
 }
 
-// export interface IDocument {
-//   key: string;
-//   name: string;
-//   value: string;
-//   iconName: string;
-//   fileType: string;
-//   modifiedBy: string;
-//   dateModified: string;
-//   dateModifiedValue: number;
-//   fileSize: string;
-//   fileSizeRaw: number;
-// }
-
 interface Ft3asChecklistProps {
   checklistDoc?: IChecklistDocument;
-  questionAnswered?: (percentComplete:number)=>void;
+  questionAnswered?: (percentComplete: number) => void;
+  visibleCategories?: ICategory[];
+  visibleSeverities?: ISeverity[];
 }
 
 export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asChecklistState> {
   private _selection: Selection;
+
   // private _allItems: ICheckItemAnswered[];
 
   constructor(props: Ft3asChecklistProps) {
@@ -184,8 +175,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     });
 
     console.log('check items ' + this.props.checklistDoc?.items.length);
+    const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities);
     this.state = {
-      items: this.props.checklistDoc?.items ?? [],
+      allItems: items,
+      items: items,
       columns: columns,
       selectionDetails: this._getSelectionDetails(),
       isModalSelection: false,
@@ -196,10 +189,21 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
-    console.log('receiving properties');
+    console.log('receiving properties ' + props.visibleCategories + ' \n' + props.visibleSeverities);
+
+    const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities);
     this.setState({
-      items: props.checklistDoc?.items ?? []
+      items: items
     });
+  }
+
+  private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[]) {
+    if (!visibleSeverities) {
+      console.log('no severities??');
+    }
+    return items.filter(item =>
+      (visibleCategories === undefined || visibleCategories.findIndex(c => c.name === item.category) !== -1)
+      && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase())) !== -1);
   }
 
   public render() {
@@ -229,7 +233,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
         </div>
         <div className={classNames.selectionDetails}>{selectionDetails}</div>
         <Announced message={selectionDetails} />
-        <Label>{`Total: ${this.props.checklistDoc?.items.length} Filtered: ${items.length} `}</Label>
+        <Label>{`Total: ${this.state.allItems.length} Filtered: ${items.length} `}</Label>
         {announcedMessage ? <Announced message={announcedMessage} /> : undefined}
         {isModalSelection ? (
           <MarqueeSelection selection={this._selection}>
@@ -297,7 +301,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   }
 
   private _onChangeText = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text?: string): void => {
-    const filteredItems = text ? this.props.checklistDoc?.items.filter(item => this.doFilter(item, text)) : this.props.checklistDoc?.items;
+    const filteredItems = text ? this.state.allItems.filter(item => this.doFilter(item, text)) : this.state.allItems;
     this.setState({
       items: filteredItems ?? []
     });

@@ -1,5 +1,6 @@
 import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
 import React, { useEffect, useState } from "react";
+import {BrowserRouter, Link, Route} from 'react-router-dom';
 import { ICheckItemAnswered, Status } from "../model/ICheckItem";
 import { IChecklistDocument } from "../model/IChecklistDocument";
 import TemplateServiceInstance from "../service/TemplateService";
@@ -8,6 +9,8 @@ import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
 import { Ft3asToolbar } from "./Ft3asToolbar";
 import { Ft3asProgress } from "./Ft3asProgress";
 import { setVirtualParent } from '@fluentui/dom-utilities';
+import { getAppInsights }  from "../service/TelemetryService";
+import TelemetryProvider from '../service/telemetry-provider';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -24,6 +27,8 @@ export default function Ft3asApp() {
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [percentComplete, setPercentComplete] = useState(0);
+
+    let appInsights = null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -143,26 +148,30 @@ export default function Ft3asApp() {
 
 
     return (
-        <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
-            <Ft3asToolbar
-                onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
-                onDownloadReviewClick={e => { downloadFile(); }}
-                onUploadReviewClick={e => { uploadFile(e); }}
-                />
-            <Ft3asProgress
-                percentComplete={percentComplete}
-            />
-            <FocusZone>
-                <Ft3asChecklist
-                    checklistDoc={checklistDoc}
-                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}>
-                </Ft3asChecklist>
-            </FocusZone>
-            <Ft3AsTemplateSelector
-                isOpen={showSelectTemplate}
-                onTemplateSelected={onTemplateSelected}
-                onClose={() => { alert('close?'); setShowSelectTemplate(false); }} />
-        </Stack>
+        <BrowserRouter>
+            <TelemetryProvider instrumentationKey="2c36df6e-7df9-4aed-91d8-4a345ce86979" after={() => { appInsights = getAppInsights() }}>
+                <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
+                    <Ft3asToolbar
+                        onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
+                        onDownloadReviewClick={e => { downloadFile(); }}
+                        onUploadReviewClick={e => { uploadFile(e); }}
+                        />
+                    <Ft3asProgress
+                        percentComplete={percentComplete}
+                    />
+                    <FocusZone>
+                        <Ft3asChecklist
+                            checklistDoc={checklistDoc}
+                            questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}>
+                        </Ft3asChecklist>
+                    </FocusZone>
+                    <Ft3AsTemplateSelector
+                        isOpen={showSelectTemplate}
+                        onTemplateSelected={onTemplateSelected}
+                        onClose={() => { alert('close?'); setShowSelectTemplate(false); }} />
+                </Stack>
+            </TelemetryProvider>
+        </BrowserRouter>
     );
 
 }

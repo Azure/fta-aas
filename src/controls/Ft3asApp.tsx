@@ -3,7 +3,7 @@ import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
 
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
-import { IChecklistDocument } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
@@ -32,8 +32,8 @@ export default function Ft3asApp() {
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
     const [percentComplete, setPercentComplete] = useState(0);
-    const [visibleCategories, setVisibleCategories]=useState<ICategory[]>();
-    const [visibleSeverities, setVisibleSeverities]=useState<ISeverity[]>();
+    const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
+    const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -79,7 +79,7 @@ export default function Ft3asApp() {
         console.log('Test')
         const fileName = 'review.json'
         const fileType = 'text/json'
-        var data = JSON.stringify(checklistDoc) 
+        var data = JSON.stringify(checklistDoc)
         // Create a blob with the data we want to download as a file
         const blob = new Blob([data], { type: fileType })
         // Create an anchor element and dispatch a click event on it
@@ -113,7 +113,7 @@ export default function Ft3asApp() {
             }
 
             inputElement.click();
-            inputElement.onchange= (e) => {
+            inputElement.onchange = (e) => {
                 if ((e.target as HTMLInputElement).files === null) {
                     return
                 }
@@ -122,20 +122,20 @@ export default function Ft3asApp() {
                     var file = files?.item(0);
 
                     if (file) {
-                    
+
                         var reader = new FileReader();
-                        reader.onload = function(event) {
+                        reader.onload = function (event) {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
                             setChecklistDoc(doc)
                         };
-            
+
                         (e.target as HTMLInputElement).value = ''
-            
+
                         reader.readAsText(file);
                     } else {
                         console.error(
-                          'File could not be uploaded. Please try again.'
+                            'File could not be uploaded. Please try again.'
                         )
                     }
                 }
@@ -150,27 +150,27 @@ export default function Ft3asApp() {
             }, 10000);
         });
 
-        
+
     };
 
 
     return (
         <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
             <Ft3asToolbar
-                onFilter={e=>{setShowFilters(true)}} />
+                onFilter={e => { setShowFilters(true) }}
                 onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                 onDownloadReviewClick={e => { downloadFile(); }}
                 onUploadReviewClick={e => { uploadFile(e); }}
-                />
+            />
             <Ft3asProgress
                 percentComplete={percentComplete}
             />
-            {checklistDoc ? (<Ft3asFilters 
-            isOpen={showFilters} 
-            checklistDoc={checklistDoc} 
-            categoriesChanged={setVisibleCategories}
-            severitiesChanged={setVisibleSeverities}
-            onClose={()=>setShowFilters(false)}></Ft3asFilters>) : (<></>)}
+            {checklistDoc ? (<Ft3asFilters
+                isOpen={showFilters}
+                checklistDoc={checklistDoc}
+                categoriesChanged={setVisibleCategories}
+                severitiesChanged={setVisibleSeverities}
+                onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
             <FocusZone>
                 <Ft3asChecklist
@@ -178,7 +178,7 @@ export default function Ft3asApp() {
                     questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
                     visibleCategories={visibleCategories}
                     visibleSeverities={visibleSeverities}
-                    >
+                >
                 </Ft3asChecklist>
             </FocusZone>
             <Ft3AsTemplateSelector

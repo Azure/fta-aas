@@ -9,6 +9,7 @@ interface Ft3AsTemplateSelectorProps {
     onTemplateSelected: (templateUrl?: string) => void;
     onClose: () => void;
 }
+
 export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps) {
     const { isOpen } = props;
     // const [availableTemplates, setAvailableTemplates] = useState<IDropdownOption[]>([]);

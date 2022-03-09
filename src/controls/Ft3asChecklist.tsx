@@ -217,6 +217,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
   }
 
+  private onDiscardEdition(){
+    this._selection.toggleIndexSelected(this._selection.getSelectedIndices()[0]);
+  }
+
 
 
   public render() {
@@ -231,7 +235,8 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
               item={currentItem}
               onItemChanged={this.onItemChanged.bind(this)}
               onNext={this.onNext.bind(this)}
-              onPrevious={this.onPrevious.bind(this)} />
+              onPrevious={this.onPrevious.bind(this)}
+              onDiscard={this.onDiscardEdition.bind(this)} />
 
           ) : <></>}
         </Stack>

@@ -11,6 +11,7 @@ import { Ft3asProgress } from "./Ft3asProgress";
 import { setVirtualParent } from '@fluentui/dom-utilities';
 import { getAppInsights }  from "../service/TelemetryService";
 import TelemetryProvider from '../service/telemetry-provider';
+import CsvGeneratorInstance from '../service/CsvGenerator';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -69,7 +70,6 @@ export default function Ft3asApp() {
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
     const downloadFile = () => {
-        console.log('Test')
         const fileName = 'review.json'
         const fileType = 'text/json'
         var data = JSON.stringify(checklistDoc) 
@@ -87,6 +87,15 @@ export default function Ft3asApp() {
         })
         a.dispatchEvent(clickEvt)
         a.remove()
+    }
+
+    const downloadCsv = () => {
+        const fileName = 'review'
+        //const replacer = (key: string, value: object) => typeof value === 'undefined' ? null : value;
+        const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'status'];
+        const replacer = (key: string, value: object) => { if (typeof value != 'object' && !arr.includes(key)) {return void(0);} return value; } 
+
+        CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
 
     const uploadFile = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
@@ -155,6 +164,7 @@ export default function Ft3asApp() {
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
+                        onDownloadCsVClick={e => { downloadCsv(); }}
                         />
                     <Ft3asProgress
                         percentComplete={percentComplete}

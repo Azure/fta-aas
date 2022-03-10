@@ -178,8 +178,8 @@ export default function Ft3asApp() {
 
 
     const getChecklistName = (): string => {
-        if (checklistDoc && checklistDoc.metadata.length > 0) {
-            return checklistDoc.metadata[0].name;
+        if (checklistDoc && checklistDoc.metadata['name']) {
+            return checklistDoc.metadata['name'];
         } else {
             return 'No checklist loaded';
         }

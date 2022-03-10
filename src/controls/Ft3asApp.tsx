@@ -4,6 +4,7 @@ import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
+import {BrowserRouter, Link, Route} from 'react-router-dom';
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
@@ -12,6 +13,9 @@ import { Ft3asProgress } from "./Ft3asProgress";
 import Ft3asFilters from "./Ft3asFilters";
 import { ISeverity } from "../model/ISeverity";
 import { setVirtualParent } from '@fluentui/dom-utilities';
+import { getAppInsights }  from "../service/TelemetryService";
+import TelemetryProvider from '../service/telemetry-provider';
+import CsvGeneratorInstance from '../service/CsvGenerator';
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -34,6 +38,8 @@ export default function Ft3asApp() {
     const [percentComplete, setPercentComplete] = useState(0);
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
+
+    let appInsights = null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,7 +82,6 @@ export default function Ft3asApp() {
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
     const downloadFile = () => {
-        console.log('Test')
         const fileName = 'review.json'
         const fileType = 'text/json'
         var data = JSON.stringify(checklistDoc)
@@ -94,6 +99,15 @@ export default function Ft3asApp() {
         })
         a.dispatchEvent(clickEvt)
         a.remove()
+    }
+
+    const downloadCsv = () => {
+        const fileName = 'review'
+        //const replacer = (key: string, value: object) => typeof value === 'undefined' ? null : value;
+        const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'status'];
+        const replacer = (key: string, value: object) => { if (typeof value != 'object' && !arr.includes(key)) {return void(0);} return value; } 
+
+        CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
 
     const uploadFile = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
@@ -155,37 +169,41 @@ export default function Ft3asApp() {
 
 
     return (
-        <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
-            <Ft3asToolbar
-                onFilter={e => { setShowFilters(true) }}
-                onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
-                onDownloadReviewClick={e => { downloadFile(); }}
-                onUploadReviewClick={e => { uploadFile(e); }}
-            />
-            <Ft3asProgress
-                percentComplete={percentComplete}
-            />
-            {checklistDoc ? (<Ft3asFilters
-                isOpen={showFilters}
-                checklistDoc={checklistDoc}
-                categoriesChanged={setVisibleCategories}
-                severitiesChanged={setVisibleSeverities}
-                onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
+        <BrowserRouter>
+            <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
+                <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
+                    <Ft3asToolbar
+                        onFilter={e => { setShowFilters(true) }}
+                        onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
+                        onDownloadReviewClick={e => { downloadFile(); }}
+                        onUploadReviewClick={e => { uploadFile(e); }}
+                    />
+                    <Ft3asProgress
+                        percentComplete={percentComplete}
+                    />
+                    {checklistDoc ? (<Ft3asFilters
+                        isOpen={showFilters}
+                        checklistDoc={checklistDoc}
+                        categoriesChanged={setVisibleCategories}
+                        severitiesChanged={setVisibleSeverities}
+                        onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
-            <FocusZone>
-                <Ft3asChecklist
-                    checklistDoc={checklistDoc}
-                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
-                    visibleCategories={visibleCategories}
-                    visibleSeverities={visibleSeverities}
-                >
-                </Ft3asChecklist>
-            </FocusZone>
-            <Ft3AsTemplateSelector
-                isOpen={showSelectTemplate}
-                onTemplateSelected={onTemplateSelected}
-                onClose={() => { setShowSelectTemplate(false); }} />
-        </Stack>
+                    <FocusZone>
+                        <Ft3asChecklist
+                            checklistDoc={checklistDoc}
+                            questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
+                            visibleCategories={visibleCategories}
+                            visibleSeverities={visibleSeverities}
+                        >
+                        </Ft3asChecklist>
+                    </FocusZone>
+                    <Ft3AsTemplateSelector
+                        isOpen={showSelectTemplate}
+                        onTemplateSelected={onTemplateSelected}
+                        onClose={() => { setShowSelectTemplate(false); }} />
+                </Stack>
+            </TelemetryProvider>
+        </BrowserRouter>
     );
 
 }

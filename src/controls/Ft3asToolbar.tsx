@@ -11,7 +11,7 @@ interface Ft3asToolbarProps {
     onFilter?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
-    onDownloadCsVClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onDownloadCsvClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
 
 export function Ft3asToolbar(props: Ft3asToolbarProps) {
@@ -40,7 +40,7 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             key: 'excel',
             text: 'Export Excel',
             iconProps: { iconName: 'ExcelDocument' },
-            onClick: props.onDownloadCsVClick,
+            onClick: props.onDownloadCsvClick,
         },
         {
             key: 'filter',

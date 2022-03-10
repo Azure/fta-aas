@@ -101,7 +101,7 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
 
         let result = props.item.graphQResult[0];
         if (!result) return cols;
-        
+
         if (result.success){
             cols.push(getColumnskeleton(ctr, 'success'));
             ctr++;           
@@ -128,34 +128,6 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
         }                        
         return cols;
     };
-
-    const detailColumns: IColumn[] = [
-        {
-          key: 'column1',
-          name: 'Result',
-          fieldName: 'result',
-          minWidth: 70,
-          maxWidth: 90,
-          isRowHeader: true,
-          isResizable: true,
-          isSorted: true,
-          isSortedDescending: false,
-          sortAscendingAriaLabel: 'Sorted A to Z',
-          sortDescendingAriaLabel: 'Sorted Z to A',
-          data: 'string',
-          isPadded: true,
-        },
-        {
-          key: 'column2',
-          name: 'Resource ID',
-          fieldName: 'id',
-          minWidth: 70,
-          maxWidth: 90,
-          isResizable: true,
-          data: 'string',
-          isPadded: true,
-        }
-      ];
 
     return (
         <Stack horizontal tokens={{

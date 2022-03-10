@@ -1,4 +1,4 @@
-import { FocusZone, IStackStyles, IStackTokens, Stack, Text, BaseButton, Button, } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Stack, Text, } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
@@ -31,7 +31,7 @@ const stackStyles: Partial<IStackStyles> = {
 };
 
 export default function Ft3asApp() {
-
+    const [isModified, setIsModified] = useState(false);
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
@@ -79,6 +79,7 @@ export default function Ft3asApp() {
         });
         setVisibleCategories(doc.categories);
         setVisibleSeverities(doc.severities);
+        setIsModified(false);
     }
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
@@ -91,6 +92,7 @@ export default function Ft3asApp() {
         // Create an anchor element and dispatch a click event on it
         // to trigger a download
         downloadHelper(fileName, blob);
+        setIsModified(false);
     }
 
     const downloadCsv = () => {
@@ -111,7 +113,7 @@ export default function Ft3asApp() {
         CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
 
-    const uploadFile = (ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | BaseButton | Button | HTMLSpanElement, MouseEvent> | undefined) => {
+    const uploadFile = (ev: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement> | undefined) => {
         ev?.persist();
 
         Promise.resolve().then(() => {
@@ -143,6 +145,7 @@ export default function Ft3asApp() {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
                             setChecklistDoc(doc)
+                            setIsModified(false);
                         };
 
                         (e.target as HTMLInputElement).value = ''
@@ -185,7 +188,7 @@ export default function Ft3asApp() {
             }
 
             inputElement.click();
-            inputElement.onchange= (e) => {
+            inputElement.onchange = (e) => {
                 if ((e.target as HTMLInputElement).files === null) {
                     return
                 }
@@ -194,23 +197,23 @@ export default function Ft3asApp() {
                     let file = files?.item(0);
 
                     if (file) {
-                    
+
                         let reader = new FileReader();
-                        reader.onload = function(event) {
+                        reader.onload = function (event) {
                             const contents = event?.target?.result;
                             const graphQResult = JSON.parse(contents as string) as IGraphQueryResult;
-                            if (checklistDoc){
+                            if (checklistDoc) {
                                 const doc = GraphServiceInstance.processResults(graphQResult, checklistDoc);
                                 setChecklistDoc(doc);
                             }
                         };
-            
+
                         (e.target as HTMLInputElement).value = ''
-            
+
                         reader.readAsText(file);
                     } else {
                         console.error(
-                          'File could not be uploaded. Please try again.'
+                            'File could not be uploaded. Please try again.'
                         )
                     }
                 }
@@ -225,7 +228,7 @@ export default function Ft3asApp() {
             }, 10000);
         });
 
-        
+
     };
 
     function downloadHelper(fileName: string, blob: Blob) {
@@ -252,8 +255,9 @@ export default function Ft3asApp() {
     }
 
 
-    const definePercentComplete=(percentComplete:number) => {
+    const definePercentComplete = (percentComplete: number) => {
         setPercentComplete(percentComplete);
+        setIsModified(true);
     }
 
     return (
@@ -261,6 +265,7 @@ export default function Ft3asApp() {
             <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
                     <Ft3asToolbar
+                        isModified={isModified}
                         onFilter={e => { setShowFilters(true) }}
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}

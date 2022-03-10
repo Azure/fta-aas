@@ -30,7 +30,13 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
     // const [currentItem, setCurrentItem] = useState(props.item);
 
     useEffect(() => {
-        setComments(props.item.comments);
+        if(props.item.comments){
+            setComments(props.item.comments);
+        }
+        else
+        {
+            setComments('');
+        }
         setItemStatus(props.item.status);
     }, [props.item]);
 
@@ -113,7 +119,7 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
                                 multiline
                                 rows={3}
                                 value={comments}
-                                onChange={onCommentsChanged} />
+                                onChange={onCommentsChanged}/>
                         </Stack.Item>
                         <Stack.Item grow={1}>
                             <ComboBox

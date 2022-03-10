@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { TextField } from '@fluentui/react/lib/TextField';
 import { Announced } from '@fluentui/react/lib/Announced';
 import { DetailsList, DetailsListLayoutMode, Selection, SelectionMode, IColumn } from '@fluentui/react/lib/DetailsList';
 import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
@@ -45,6 +44,7 @@ interface Ft3asChecklistProps {
   questionAnswered?: (percentComplete: number) => void;
   visibleCategories?: ICategory[];
   visibleSeverities?: ISeverity[];
+  filterText?: string;
 }
 
 export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asChecklistState> {
@@ -153,7 +153,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       },
     });
 
-    const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities);
+    const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities, this.props.filterText);
     this.state = {
       allItems: items,
       items: items,
@@ -166,9 +166,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
-    console.log('receiving properties ' + props.visibleCategories + ' \n' + props.visibleSeverities);
-
-    const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities);
+    const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities, props.filterText);
 
     this.setState({
       items: items
@@ -181,13 +179,18 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
   }
 
-  private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[]): ICheckItemAnswered[] {
+  private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], filterText?: string): ICheckItemAnswered[] {
+
     if (!visibleSeverities) {
       console.log('no severities??');
     }
+
+    const _filterText= filterText?.toLowerCase();
+
     return items.filter(item =>
       (visibleCategories === undefined || visibleCategories.findIndex(c => c.name === item.category) !== -1)
-      && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase())) !== -1);
+      && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase()) !== -1)
+      && (_filterText === undefined || _filterText.trim() == '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
   }
   private onItemChanged(item: ICheckItemAnswered) {
     console.debug(`comment: ${item.comments} status: ${item.status}`)
@@ -266,7 +269,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
           <Separator>Full list</Separator>
           <div>
             <div className={classNames.controlWrapper}>
-              <TextField label="Filter by name:" onChange={this._onChangeText} styles={controlStyles} readOnly={false} />
               <Announced message={`Number of items after filter applied: ${items.length}.`} />
             </div>
             <div className={classNames.selectionDetails}>{selectionDetails}</div>
@@ -316,24 +318,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     // console.debug('_getkey ' + item);
     // return index?.toString() ?? '';
   }
-
-  private doFilter(item: ICheckItemAnswered, filterText: string): boolean {
-    if (item && (item.category.includes(filterText)
-      || item.subcategory.includes(filterText)
-      || item.text.includes(filterText)
-      || item.severity.toString().includes(filterText))) {
-      return true;
-    }
-    return false;
-  }
-
-  private _onChangeText = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text?: string): void => {
-    const filteredItems = text ? this.state.allItems.filter(item => this.doFilter(item, text)) : this.state.allItems;
-    console.log(filteredItems.length);
-    this.setState({
-      items: filteredItems ?? []
-    });
-  };
 
   private _onItemInvoked(item: any): void {
     alert(`Item invoked: `);

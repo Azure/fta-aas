@@ -233,7 +233,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   private onPrevious(currentGuid: string) {
     const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);
     console.debug(`Current index for ${currentGuid} -> (${currentIndex}/${this.state.items.length})`)
-    if (currentIndex !== -1 && currentIndex > 1) {
+    if (currentIndex !== -1 && currentIndex > 0) {
       this._selection.setIndexSelected(currentIndex, false, false);
       this._selection.setIndexSelected(currentIndex - 1, true, true);
     }

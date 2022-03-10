@@ -25,16 +25,16 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             onClick: props.onSelectTemplateClick
         },
         {
+            key: 'download',
+            text: 'Download responses',
+            iconProps: { iconName: 'Download' },
+            onClick: props.onDownloadReviewClick
+        },
+        {
             key: 'uploadFile',
             text: 'Upload responses',
             iconProps: { iconName: 'Upload' },
             onClick: props.onUploadReviewClick,
-        },
-        {
-            key: 'download',
-            text: 'Download',
-            iconProps: { iconName: 'Download' },
-            onClick: props.onDownloadReviewClick
         },
         {
             key: 'excel',

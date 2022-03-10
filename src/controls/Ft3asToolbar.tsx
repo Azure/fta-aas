@@ -8,6 +8,7 @@ const overflowProps: IButtonProps = { ariaLabel: 'More commands' };
 
 interface Ft3asToolbarProps {
     onSelectTemplateClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onFilter?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
@@ -39,6 +40,12 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             text: 'Export Excel',
             iconProps: { iconName: 'ExcelDocument' },
             onClick: () => console.log('Export Excel'),
+        },
+        {
+            key: 'filter',
+            text: 'Filters',
+            iconProps: { iconName: 'Filter' },
+            onClick: props.onFilter,
         },
 
     ];

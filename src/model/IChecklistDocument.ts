@@ -6,14 +6,14 @@ export interface ICategory {
     name: string;
 }
 export interface IMetadata {
-    name: string;
+    [key: string]: string;
 }
 
 
 export interface IChecklistDocument {
     categories: ICategory[];
     items: ICheckItemAnswered[];
-    metadata: IMetadata[],
+    metadata: IMetadata,
     status: IStatus[],
     severities: ISeverity[]
 }

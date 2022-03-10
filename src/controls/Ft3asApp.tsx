@@ -1,10 +1,10 @@
-import { FocusZone, IStackStyles, IStackTokens, Stack } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Stack, Text } from "@fluentui/react";
 
 
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
-import {BrowserRouter, Link, Route} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
@@ -13,7 +13,7 @@ import { Ft3asProgress } from "./Ft3asProgress";
 import Ft3asFilters from "./Ft3asFilters";
 import { ISeverity } from "../model/ISeverity";
 import { setVirtualParent } from '@fluentui/dom-utilities';
-import { getAppInsights }  from "../service/TelemetryService";
+import { getAppInsights } from "../service/TelemetryService";
 import TelemetryProvider from '../service/telemetry-provider';
 import CsvGeneratorInstance from '../service/CsvGenerator';
 
@@ -82,9 +82,9 @@ export default function Ft3asApp() {
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
     const downloadFile = () => {
-        const fileName = 'review.json'
-        const fileType = 'text/json'
-        var data = JSON.stringify(checklistDoc)
+        const fileName = `${getChecklistName()}.json`;
+        const fileType = 'text/json';
+        const data = JSON.stringify(checklistDoc)
         // Create a blob with the data we want to download as a file
         const blob = new Blob([data], { type: fileType })
         // Create an anchor element and dispatch a click event on it
@@ -102,19 +102,19 @@ export default function Ft3asApp() {
     }
 
     const downloadCsv = () => {
-        const fileName = 'review'
+        const fileName = getChecklistName();
         //const replacer = (key: string, value: object) => typeof value === 'undefined' ? null : value;
         const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'comments'];
-        const replacer = (key: string, value: object) => { 
+        const replacer = (key: string, value: object) => {
             if (typeof value != 'object' && !arr.includes(key)) {
-                return void(0);
-            } else if(key == 'status'){ 
-                var keys = Object.values(value); 
+                return void (0);
+            } else if (key === 'status') {
+                const keys = Object.values(value);
                 return keys[0];
             }
 
-            return value; 
-        } 
+            return value;
+        }
 
         CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
@@ -141,12 +141,12 @@ export default function Ft3asApp() {
                     return
                 }
                 else {
-                    var files = (e.target as HTMLInputElement).files;
-                    var file = files?.item(0);
+                    let files = (e.target as HTMLInputElement).files;
+                    let file = files?.item(0);
 
                     if (file) {
 
-                        var reader = new FileReader();
+                        let reader = new FileReader();
                         reader.onload = function (event) {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
@@ -177,6 +177,16 @@ export default function Ft3asApp() {
     };
 
 
+    const getChecklistName = (): string => {
+        if (checklistDoc && checklistDoc.metadata['name']) {
+            return checklistDoc.metadata['name'];
+        } else {
+            return 'No checklist loaded';
+        }
+    }
+
+
+
     return (
         <BrowserRouter>
             <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
@@ -188,6 +198,7 @@ export default function Ft3asApp() {
                         onDownloadCsvClick={e => { downloadCsv(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
                     />
+                    <Text variant={'xxLarge'}>{getChecklistName()}</Text>
                     <Ft3asProgress
                         percentComplete={percentComplete}
                     />

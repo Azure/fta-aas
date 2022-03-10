@@ -1,4 +1,4 @@
-import { FocusZone, IStackStyles, IStackTokens, Stack, Text } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Stack, Text, BaseButton, Button, } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
@@ -111,7 +111,7 @@ export default function Ft3asApp() {
         CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
 
-    const uploadFile = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
+    const uploadFile = (ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | BaseButton | Button | HTMLSpanElement, MouseEvent> | undefined) => {
         ev?.persist();
 
         Promise.resolve().then(() => {

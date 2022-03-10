@@ -1,4 +1,3 @@
-import { stringify } from "querystring";
 import { ICheckItemAnswered, IGraphQResult } from "../model/ICheckItem";
 import { IChecklistDocument } from "../model/IChecklistDocument";
 import { ICheck, IGraphQueryResult } from "../model/IGraphQueryResult";

@@ -218,33 +218,6 @@ export default function Ft3asApp() {
         
     };
 
-
-    return (
-<<<<<<< HEAD
-        <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
-            <Ft3asToolbar
-                onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
-                onDownloadReviewClick={e => { downloadFile(); }}
-                onUploadReviewClick={e => { uploadFile(e); }}
-                onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
-                />
-            <Ft3asProgress
-                percentComplete={percentComplete}
-            />
-            <FocusZone>
-                <Ft3asChecklist
-                    checklistDoc={checklistDoc}
-                    questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}>
-                </Ft3asChecklist>
-            </FocusZone>
-            <Ft3AsTemplateSelector
-                isOpen={showSelectTemplate}
-                onTemplateSelected={onTemplateSelected}
-                onClose={() => { alert('close?'); setShowSelectTemplate(false); }} />
-        </Stack>
-    );
-
-
     function downloadHelper(fileName: string, blob: Blob) {
         // Create an anchor element and dispatch a click event on it
         // to trigger a download
@@ -259,8 +232,8 @@ export default function Ft3asApp() {
         a.dispatchEvent(clickEvt);
         a.remove();
     }
-}
-=======
+
+    return (
         <BrowserRouter>
             <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
@@ -299,4 +272,3 @@ export default function Ft3asApp() {
     );
 
 }
->>>>>>> main

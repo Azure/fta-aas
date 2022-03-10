@@ -265,7 +265,7 @@ export default function Ft3asApp() {
                         onFilter={e => { setShowFilters(true) }}
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
-                        onDownloadCsVClick={e => { downloadCsv(); }}
+                        onDownloadCsvClick={e => { downloadCsv(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
                         onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
                     />

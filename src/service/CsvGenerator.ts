@@ -1,4 +1,4 @@
-import { Console } from "console";
+
 
 class CsvGenerator{
     JSONToCSVConvertor = (JSONData: string, ReportTitle: string, ShowLabel: boolean) => {

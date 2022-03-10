@@ -1,4 +1,4 @@
-import { IGHFileList, ITreeItem } from "../model/IGHFileList";
+import { IGHFileList } from "../model/IGHFileList";
 import { IParseResult } from "../model/IParseResult";
 
 class GHParser {

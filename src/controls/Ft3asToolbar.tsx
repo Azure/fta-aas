@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { CommandBar, ICommandBarItemProps } from '@fluentui/react/lib/CommandBar';
 import { IButtonProps } from '@fluentui/react/lib/Button';
-import { setVirtualParent } from '@fluentui/dom-utilities';
 import { FocusZone } from '@fluentui/react';
 
 const overflowProps: IButtonProps = { ariaLabel: 'More commands' };
@@ -12,7 +11,7 @@ interface Ft3asToolbarProps {
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadGraphQResultClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
-    onDownloadCsVClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onDownloadCsvClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
 
 export function Ft3asToolbar(props: Ft3asToolbarProps) {

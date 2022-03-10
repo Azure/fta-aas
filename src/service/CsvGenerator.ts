@@ -3,15 +3,15 @@ import { Console } from "console";
 class CsvGenerator{
     JSONToCSVConvertor = (JSONData: string, ReportTitle: string, ShowLabel: boolean) => {
         //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-        var arrData = JSON.parse(JSONData);
-        var CSV = "";
+        let arrData = JSON.parse(JSONData);
+        let CSV = "";
 
         //This condition will generate the Label/Header
         if (ShowLabel) {
-          var row = "";
+          let row = "";
     
           //This loop will extract the label from 1st index of on array
-          for (var index in arrData.items[0]) {
+          for (let index in arrData.items[0]) {
             //Now convert each value to string and comma-separated
             row += index + ",";
           }
@@ -23,11 +23,11 @@ class CsvGenerator{
         }
     
         //1st loop is to extract each row
-        for (var i = 0; i < arrData.items.length; i++) {
-          var row = "";
+        for (let i = 0; i < arrData.items.length; i++) {
+          let row = "";
     
           //2nd loop will extract each column and convert it in string comma-separated
-          for (var index in arrData.items[i]) {
+          for (let index in arrData.items[i]) {
             row += '"' + arrData.items[i][index] + '",';
           }
     
@@ -43,12 +43,12 @@ class CsvGenerator{
         }
     
         //Generate a file name
-        var fileName = "";
+        let fileName = "";
         //this will remove the blank-spaces from the title and replace it with an underscore
         fileName += ReportTitle.replace(/ /g, "_");
     
         //Initialize file format you want csv or xls
-        var uri = "data:text/csv;charset=utf-8," + escape(CSV);
+        let uri = "data:text/csv;charset=utf-8," + escape(CSV);
     
         // Now the little tricky part.
         // you can use either>> window.open(uri);
@@ -56,7 +56,7 @@ class CsvGenerator{
         // or you will not get the correct file extension
     
         //this trick will generate a temp <a /> tag
-        var link = document.createElement("a");
+        let link = document.createElement("a");
         link.href = uri;
     
         //set the visibility hidden so it will not effect on your web-layout

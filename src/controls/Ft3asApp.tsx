@@ -1,6 +1,4 @@
 import { FocusZone, IStackStyles, IStackTokens, Stack, Text } from "@fluentui/react";
-
-
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
@@ -38,6 +36,7 @@ export default function Ft3asApp() {
     const [percentComplete, setPercentComplete] = useState(0);
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
+    const [filterText, setFilterText] = useState('');
 
     let appInsights = null;
 
@@ -207,6 +206,7 @@ export default function Ft3asApp() {
                         checklistDoc={checklistDoc}
                         categoriesChanged={setVisibleCategories}
                         severitiesChanged={setVisibleSeverities}
+                        filterTextChanged={setFilterText}
                         onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
                     <FocusZone>
@@ -215,6 +215,7 @@ export default function Ft3asApp() {
                             questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
                             visibleCategories={visibleCategories}
                             visibleSeverities={visibleSeverities}
+                            filterText={filterText}
                         >
                         </Ft3asChecklist>
                     </FocusZone>

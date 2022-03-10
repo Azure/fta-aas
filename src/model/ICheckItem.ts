@@ -23,7 +23,7 @@ export interface IGraphQResult {
 }
 
 export interface ICheckItemAnswered extends ICheckItem {
-    graphQResult?: IGraphQResult;
+    graphQResult?: IGraphQResult[];
     status?: IStatus;
     comments?: string;
 }

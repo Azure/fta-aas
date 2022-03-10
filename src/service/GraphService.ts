@@ -9,7 +9,7 @@ class GraphService {
             items: checklistDoc.items.map<ICheckItemAnswered>((i: ICheckItemAnswered) => {
                 const extendedI: ICheckItemAnswered = {
                     ...i,
-                    graphQResult: this.assembleOutput(graphQResult.checks.find(c => c.guid === i.guid))
+                    graphQResult: this.assembleOutput(graphQResult.checks.filter(c => c.guid === i.guid))
                 };
                 return extendedI;
             })
@@ -17,17 +17,21 @@ class GraphService {
         return outputdoc;
     }
 
-    assembleOutput = (item : ICheck | undefined) : IGraphQResult => {
-        if (!item) return {};
+    assembleOutput = (items : ICheck[] | undefined) : IGraphQResult[] => {
+        if (!items) return [];
 
-        let toreturn : IGraphQResult = {
-            success: item.success,
-            compliant: item.compliant,
-            fail: item.fail,
-            failure: item.failure,
-            result: item.result, 
-            id: item.id
-        };
+        let toreturn : IGraphQResult[] = items.map(i => 
+                {
+                    let result : IGraphQResult = {
+                    success: i.success,
+                    compliant: i.compliant,
+                    fail: i.fail,
+                    failure: i.failure,
+                    result: i.result, 
+                    id: i.id
+                }
+                return result;
+            });
         return toreturn;
     }
 }

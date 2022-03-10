@@ -86,7 +86,7 @@ export default function Ft3asApp() {
     const downloadFile = () => {
         const fileName = 'review.json'
         const fileType = 'text/json'
-        var data = JSON.stringify(checklistDoc)
+        let data = JSON.stringify(checklistDoc)
         // Create a blob with the data we want to download as a file
         const blob = new Blob([data], { type: fileType })
         // Create an anchor element and dispatch a click event on it
@@ -182,12 +182,12 @@ export default function Ft3asApp() {
                     return
                 }
                 else {
-                    var files = (e.target as HTMLInputElement).files;
-                    var file = files?.item(0);
+                    let files = (e.target as HTMLInputElement).files;
+                    let file = files?.item(0);
 
                     if (file) {
                     
-                        var reader = new FileReader();
+                        let reader = new FileReader();
                         reader.onload = function(event) {
                             const contents = event?.target?.result;
                             const graphQResult = JSON.parse(contents as string) as IGraphQueryResult;

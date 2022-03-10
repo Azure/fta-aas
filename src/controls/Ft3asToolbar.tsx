@@ -1,23 +1,24 @@
 import * as React from 'react';
 import { CommandBar, ICommandBarItemProps } from '@fluentui/react/lib/CommandBar';
 import { IButtonProps } from '@fluentui/react/lib/Button';
-import { FocusZone, MessageBar, MessageBarButton, BaseButton, Button, MessageBarType, IMessageBarStyles } from '@fluentui/react';
+import { FocusZone, MessageBar, MessageBarButton, MessageBarType, IMessageBarStyles } from '@fluentui/react';
 
 const overflowProps: IButtonProps = { ariaLabel: 'More commands' };
 
-const stackStyles: Partial<IMessageBarStyles > = {
+const stackStyles: Partial<IMessageBarStyles> = {
     actions: {
         display: 'block',
     },
-};  
+};
 
 interface Ft3asToolbarProps {
-    onSelectTemplateClick?: (ev?: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | BaseButton | Button | HTMLSpanElement, MouseEvent> | undefined) => void;
+    onSelectTemplateClick?: (ev?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onFilter?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
-    onUploadReviewClick?: (ev?: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | BaseButton | Button | HTMLSpanElement, MouseEvent> | undefined) => void;
+    onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadGraphQResultClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadCsvClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    isModified: boolean;
 }
 
 interface INotificationProps {
@@ -32,13 +33,23 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
     const resetChoice = React.useCallback(() => setChoice(false), []);
 
     const _onUploadReviewClick = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined): void => {
-        setChoice(true)
-        setAction('upload');
+        if (props.isModified === true) {
+            setChoice(true)
+            setAction('upload');
+        } else
+            if (props.onUploadReviewClick) {
+                props.onUploadReviewClick(ev);
+            }
+
     };
 
     const _onSelectTemplateClick = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined): void => {
-        setChoice(true)
-        setAction('import');
+        if (props.isModified === true) {
+            setChoice(true)
+            setAction('import');
+        } else if (props.onSelectTemplateClick) {
+            props.onSelectTemplateClick(ev);
+        }
     };
 
     const _items: ICommandBarItemProps[] = [
@@ -108,32 +119,32 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
         },
     ];
 
-    const _proceedClick = (ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | BaseButton | Button | HTMLSpanElement, MouseEvent>, action: string|undefined): void => {
+    const _proceedClick = (ev: React.MouseEvent<HTMLElement>, action: string | undefined): void => {
         setChoice(false)
-        if(action == 'upload' && props.onUploadReviewClick){
+        if (action === 'upload' && props.onUploadReviewClick) {
             props.onUploadReviewClick(ev);
         }
-        else if (action == 'import' && props.onSelectTemplateClick){
+        else if (action === 'import' && props.onSelectTemplateClick) {
             props.onSelectTemplateClick(ev);
         }
     };
-    
+
 
     const SevereExample = (p: INotificationProps) => (
         <MessageBar
-          messageBarType={MessageBarType.severeWarning}
-          styles={stackStyles}
-          actions={
-            <div>
-              <MessageBarButton onClick={(e) => _proceedClick(e, p.action)}>Yes</MessageBarButton>
-              <MessageBarButton onClick={p.resetChoice}>No</MessageBarButton>
-            </div>
-          }
+            messageBarType={MessageBarType.severeWarning}
+            styles={stackStyles}
+            actions={
+                <div>
+                    <MessageBarButton onClick={(e: React.MouseEvent<HTMLElement>) => _proceedClick(e, p.action)}>Yes</MessageBarButton>
+                    <MessageBarButton onClick={p.resetChoice}>No</MessageBarButton>
+                </div>
+            }
         >
-          You will lose the progress if you move away from this screen. Please download the progress if needed. Do you want to continue?
+            You will lose the progress if you move away from this screen. Please download the progress if needed. Do you want to continue?
 
         </MessageBar>
-      );
+    );
 
     return (
         <FocusZone>

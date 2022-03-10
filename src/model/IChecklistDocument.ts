@@ -9,7 +9,6 @@ export interface IMetadata {
     [key: string]: string;
 }
 
-
 export interface IChecklistDocument {
     categories: ICategory[];
     items: ICheckItemAnswered[];

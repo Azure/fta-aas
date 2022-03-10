@@ -6,15 +6,15 @@ import GraphServiceInstance from '../service/GraphService';
 
 const guid1 = "abc123";
 const guid2 = "def456";
-const item1 : ICheckItemAnswered = { guid: guid1, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
-const item2 : ICheckItemAnswered = { guid: guid2, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
-const baseCheckListDoc : IChecklistDocument = {
-    items: [ 
-        item1, 
-        item2 
+const item1: ICheckItemAnswered = { guid: guid1, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
+const item2: ICheckItemAnswered = { guid: guid2, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
+const baseCheckListDoc: IChecklistDocument = {
+    items: [
+        item1,
+        item2
     ],
     categories: [],
-    metadata: [],
+    metadata: {},
     severities: [],
     status: []
 };
@@ -24,7 +24,7 @@ it('Can map success graph results to the correct checklistItem', () => {
 
     let success1 = "success1";
     let success2 = "success2";
-    let graphQResult : IGraphQueryResult = { 
+    let graphQResult: IGraphQueryResult = {
         metadata: {
             format: "", timestamp: ""
         },
@@ -41,8 +41,12 @@ it('Can map success graph results to the correct checklistItem', () => {
     let item1inoutput = output.items.find(i => i.guid === guid1);
     let item2inoutput = output.items.find(i => i.guid === guid2);
     expect(item1inoutput?.graphQResult?.length).toBe(1);
-    expect(item1inoutput?.graphQResult[0]?.success).toBe(success1);
-    expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
+    if (item1inoutput?.graphQResult) {
+        expect(item1inoutput?.graphQResult[0]?.success).toBe(success1);
+    }
+    if (item2inoutput?.graphQResult) {
+        expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
+    }
 });
 
 //since we don't know what might be filled out in the graphQresult, we just expect all fields can be mapped...
@@ -61,7 +65,7 @@ it('Can map multiple graph results to the graphQResult of the checklistItem', ()
     let result2 = "result2";
     let id1 = "id1";
     let id2 = "id2";
-    let graphQResult : IGraphQueryResult = { 
+    let graphQResult: IGraphQueryResult = {
         metadata: {
             format: "", timestamp: ""
         },
@@ -77,18 +81,22 @@ it('Can map multiple graph results to the graphQResult of the checklistItem', ()
     //Assert
     let item1inoutput = output.items.find(i => i.guid === guid1);
     let item2inoutput = output.items.find(i => i.guid === guid2);
-    expect(item1inoutput?.graphQResult[0]?.success).toBe(success1);
-    expect(item1inoutput?.graphQResult[0]?.compliant).toBe(compliant1);
-    expect(item1inoutput?.graphQResult[0]?.fail).toBe(fail1);
-    expect(item1inoutput?.graphQResult[0]?.failure).toBe(failure1);
-    expect(item1inoutput?.graphQResult[0]?.result).toBe(result1);
-    expect(item1inoutput?.graphQResult[0]?.id).toBe(id1);
-    expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
-    expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
-    expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
-    expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
-    expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
-    expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    if (item1inoutput?.graphQResult) {
+        expect(item1inoutput?.graphQResult[0]?.success).toBe(success1);
+        expect(item1inoutput?.graphQResult[0]?.compliant).toBe(compliant1);
+        expect(item1inoutput?.graphQResult[0]?.fail).toBe(fail1);
+        expect(item1inoutput?.graphQResult[0]?.failure).toBe(failure1);
+        expect(item1inoutput?.graphQResult[0]?.result).toBe(result1);
+        expect(item1inoutput?.graphQResult[0]?.id).toBe(id1);
+    }
+    if (item2inoutput?.graphQResult) {
+        expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
+        expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
+        expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
+        expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
+        expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
+        expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    }
 });
 
 it('Should not map in case guids dont match', () => {
@@ -106,7 +114,7 @@ it('Should not map in case guids dont match', () => {
     let result2 = "result2";
     let id1 = "id1";
     let id2 = "id2";
-    let graphQResult : IGraphQueryResult = { 
+    let graphQResult: IGraphQueryResult = {
         metadata: {
             format: "", timestamp: ""
         },
@@ -122,18 +130,22 @@ it('Should not map in case guids dont match', () => {
     //Assert
     let item1inoutput = output.items.find(i => i.guid === guid1);
     let item2inoutput = output.items.find(i => i.guid === guid2);
-    expect(item1inoutput?.graphQResult[0]?.success).toBeUndefined();
-    expect(item1inoutput?.graphQResult[0]?.compliant).toBeUndefined();
-    expect(item1inoutput?.graphQResult[0]?.fail).toBeUndefined();
-    expect(item1inoutput?.graphQResult[0]?.failure).toBeUndefined();
-    expect(item1inoutput?.graphQResult[0]?.result).toBeUndefined();
-    expect(item1inoutput?.graphQResult[0]?.id).toBeUndefined();
-    expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
-    expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
-    expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
-    expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
-    expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
-    expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    if (item1inoutput?.graphQResult) {
+        expect(item1inoutput?.graphQResult[0]?.success).toBeUndefined();
+        expect(item1inoutput?.graphQResult[0]?.compliant).toBeUndefined();
+        expect(item1inoutput?.graphQResult[0]?.fail).toBeUndefined();
+        expect(item1inoutput?.graphQResult[0]?.failure).toBeUndefined();
+        expect(item1inoutput?.graphQResult[0]?.result).toBeUndefined();
+        expect(item1inoutput?.graphQResult[0]?.id).toBeUndefined();
+    }
+    if (item2inoutput?.graphQResult) {
+        expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
+        expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
+        expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
+        expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
+        expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
+        expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    }
 });
 
 it('Should be able to map multiple instances of the same check guid', () => {
@@ -157,7 +169,7 @@ it('Should be able to map multiple instances of the same check guid', () => {
     let id1 = "id1";
     let id2 = "id2";
     let id3 = "id2";
-    let graphQResult : IGraphQueryResult = { 
+    let graphQResult: IGraphQueryResult = {
         metadata: {
             format: "", timestamp: ""
         },
@@ -189,10 +201,12 @@ it('Should be able to map multiple instances of the same check guid', () => {
     expect(result2OfItem1?.failure).toBe(failure3);
     expect(result2OfItem1?.result).toBe(result3);
     expect(result2OfItem1?.id).toBe(id3);
-    expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
-    expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
-    expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
-    expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
-    expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
-    expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    if (item2inoutput?.graphQResult) {
+        expect(item2inoutput?.graphQResult[0]?.success).toBe(success2);
+        expect(item2inoutput?.graphQResult[0]?.compliant).toBe(compliant2);
+        expect(item2inoutput?.graphQResult[0]?.fail).toBe(fail2);
+        expect(item2inoutput?.graphQResult[0]?.failure).toBe(failure2);
+        expect(item2inoutput?.graphQResult[0]?.result).toBe(result2);
+        expect(item2inoutput?.graphQResult[0]?.id).toBe(id2);
+    }
 });

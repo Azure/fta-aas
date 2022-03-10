@@ -163,6 +163,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       announcedMessage: "announce message",
     };
     // this.setState(this.state);
+
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
@@ -173,6 +174,12 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     this.setState({
       items: items
     });
+  }
+
+  private questionAnswered(percentComplete: number) {
+    if (this.props.questionAnswered) {
+      this.props.questionAnswered(percentComplete);
+    }
   }
 
   private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[]): ICheckItemAnswered[] {
@@ -190,15 +197,30 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       let newItems = this.props.checklistDoc?.items ?? [];
       newItems[index] = item;
       let items = this.filterSourceItems(newItems, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities);
-
+      const notAnswered = this.props.checklistDoc?.status[0];
+      const currentProgress = items.filter(i => i.status !== notAnswered).length / items.length;
       this.setState({
         allItems: { ...newItems },
         items: items
       });
+      this.questionAnswered(currentProgress);
     } else {
       console.error(`index for ${item.guid} not found`);
     }
   }
+
+  // Moved to onItemChanged...
+  // private getProgress():number{
+  //   const notAnswered = this.props.checklistDoc?.status[0];
+  //   if (this.state.allItems.length === 0) {
+  //     return 0;
+  //   }
+  //   else {
+  //     const currentProgress = this.state.allItems.filter(i => i.status !== notAnswered).length / this.state.allItems.length;
+  //     console.debug(`Current progress is ${currentProgress}`);
+  //     return currentProgress;
+  //   }
+  // }
 
   private onNext(currentGuid: string) {
     const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);

@@ -6,7 +6,7 @@ import ghParser from "./GHParser";
 class TemplateService {
 
     parsed!: IParseResult;
-    files!: import("/workspaces/fta-aas/src/model/IGHFileList").IGHFileList;
+    files!: import("../model/IGHFileList").IGHFileList;
 
     async init(){
         this.files = await ghDownloader.getAllFiles();

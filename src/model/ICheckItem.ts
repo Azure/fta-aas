@@ -1,17 +1,7 @@
 import { URL } from "url";
+import { ISeverity } from "./ISeverity";
+import { IStatus } from "./IStatus";
 
-export enum Severity {
-    High,
-    Medium,
-    Low
-}
-
-export enum Status {
-    NotVerified,
-    Open,
-    Fulfilled,
-    NA
-}
 
 export interface ICheckItem {
     category: string;
@@ -19,12 +9,11 @@ export interface ICheckItem {
     text: string;
     guid: string;
     ha: number;
-    severity: Severity;
-    link?: URL;
-    graph_success?: string;
-    graph_failure?: string;
+    severity: ISeverity;
+    link?: string;
 }
 
 export interface ICheckItemAnswered extends ICheckItem {
-    status?: Status;
+    status?: IStatus;
+    comments?: string;
 }

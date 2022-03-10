@@ -53,7 +53,7 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             key: 'graph',
             text: 'Import Graph Query Result',
             iconProps: { iconName: 'Cloudy' },
-            onClick: () => props.onUploadGraphQResultClick
+            onClick: props.onUploadGraphQResultClick
         }
     ];
 

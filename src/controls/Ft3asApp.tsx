@@ -242,6 +242,7 @@ export default function Ft3asApp() {
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
+                        onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
                     />
                     <Ft3asProgress
                         percentComplete={percentComplete}

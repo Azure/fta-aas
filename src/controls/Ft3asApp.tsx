@@ -176,6 +176,9 @@ export default function Ft3asApp() {
 
     };
 
+    const definePercentComplete=(percentComplete:number) => {
+        setPercentComplete(percentComplete);
+    }
 
     return (
         <BrowserRouter>
@@ -201,7 +204,7 @@ export default function Ft3asApp() {
                     <FocusZone>
                         <Ft3asChecklist
                             checklistDoc={checklistDoc}
-                            questionAnswered={(percentComplete) => { setPercentComplete(percentComplete); }}
+                            questionAnswered={definePercentComplete}
                             visibleCategories={visibleCategories}
                             visibleSeverities={visibleSeverities}
                         >

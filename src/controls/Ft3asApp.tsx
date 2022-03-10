@@ -97,8 +97,17 @@ export default function Ft3asApp() {
     const downloadCsv = () => {
         const fileName = 'review'
         //const replacer = (key: string, value: object) => typeof value === 'undefined' ? null : value;
-        const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'status'];
-        const replacer = (key: string, value: object) => { if (typeof value != 'object' && !arr.includes(key)) {return void(0);} return value; } 
+        const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'comments'];
+        const replacer = (key: string, value: object) => { 
+            if (typeof value != 'object' && !arr.includes(key)) {
+                return void(0);
+            } else if(key == 'status'){ 
+                var keys = Object.values(value); 
+                return keys[0];
+            }
+
+            return value; 
+        } 
 
         CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
@@ -241,6 +250,7 @@ export default function Ft3asApp() {
                         onFilter={e => { setShowFilters(true) }}
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
+                        onDownloadCsvClick={e => { downloadCsv(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
                         onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
                     />

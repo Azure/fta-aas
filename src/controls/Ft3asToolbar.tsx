@@ -41,7 +41,7 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             key: 'excel',
             text: 'Export Excel',
             iconProps: { iconName: 'ExcelDocument' },
-            onClick: props.onDownloadCsVClick,
+            onClick: props.onDownloadCsvClick,
         },
         {
             key: 'filter',

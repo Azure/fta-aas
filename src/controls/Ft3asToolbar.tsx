@@ -11,7 +11,8 @@ interface Ft3asToolbarProps {
     onFilter?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onDownloadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
     onUploadReviewClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
-    onDownloadCsvClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onUploadGraphQResultClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
+    onDownloadCsVClick?: (ev?: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => void;
 }
 
 export function Ft3asToolbar(props: Ft3asToolbarProps) {
@@ -48,7 +49,12 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             iconProps: { iconName: 'Filter' },
             onClick: props.onFilter,
         },
-
+        {
+            key: 'graph',
+            text: 'Import Graph Query Result',
+            iconProps: { iconName: 'Cloudy' },
+            onClick: props.onUploadGraphQResultClick
+        }
     ];
 
     const _overflowItems: ICommandBarItemProps[] = [

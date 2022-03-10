@@ -43,7 +43,7 @@ it('Returns the list of available template names', async () => {
     await TemplateServiceInstance.init();
     
     //test
-    var names = TemplateServiceInstance.getAvailableTemplateNames();
+    let names = TemplateServiceInstance.getAvailableTemplateNames();
     expect(names).toContain( "check1" );
     expect(names).toContain( "check2" );
 });
@@ -63,10 +63,10 @@ it('Returns available languages for a checklist', async () => {
     await TemplateServiceInstance.init();
     
     //test
-    var languages1 = TemplateServiceInstance.getAvailableLanguagesforTemplate(theResponse.checklists[0].name);
+    let languages1 = TemplateServiceInstance.getAvailableLanguagesforTemplate(theResponse.checklists[0].name);
     expect(languages1).toContain( "en" );
     expect(languages1).toContain( "es" );    
-    var languages2 = TemplateServiceInstance.getAvailableLanguagesforTemplate("check2");
+    let languages2 = TemplateServiceInstance.getAvailableLanguagesforTemplate("check2");
     expect(languages2).toContain( "en" );
     expect(languages2).toContain( "nl" );    
 });

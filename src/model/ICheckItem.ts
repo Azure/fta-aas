@@ -13,7 +13,17 @@ export interface ICheckItem {
     link?: string;
 }
 
+export interface IGraphQResult {
+    success?: string,
+    compliant?: string,
+    fail?: string,
+    failure?: string, 
+    result?: string,
+    id?: string
+}
+
 export interface ICheckItemAnswered extends ICheckItem {
+    graphQResult?: IGraphQResult[];
     status?: IStatus;
     comments?: string;
 }

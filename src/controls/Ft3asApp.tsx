@@ -13,6 +13,8 @@ import { Ft3asProgress } from "./Ft3asProgress";
 import Ft3asFilters from "./Ft3asFilters";
 import { ISeverity } from "../model/ISeverity";
 import { setVirtualParent } from '@fluentui/dom-utilities';
+import GraphServiceInstance from "../service/GraphService";
+import { IGraphQueryResult } from "../model/IGraphQueryResult";
 import { getAppInsights } from "../service/TelemetryService";
 import TelemetryProvider from '../service/telemetry-provider';
 import CsvGeneratorInstance from '../service/CsvGenerator';
@@ -89,16 +91,7 @@ export default function Ft3asApp() {
         const blob = new Blob([data], { type: fileType })
         // Create an anchor element and dispatch a click event on it
         // to trigger a download
-        const a = document.createElement('a')
-        a.download = fileName
-        a.href = window.URL.createObjectURL(blob)
-        const clickEvt = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        })
-        a.dispatchEvent(clickEvt)
-        a.remove()
+        downloadHelper(fileName, blob);
     }
 
     const downloadCsv = () => {
@@ -176,6 +169,80 @@ export default function Ft3asApp() {
 
     };
 
+    const uploadGraphQResult = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
+        ev?.persist();
+
+        Promise.resolve().then(() => {
+            const inputElement = document.createElement('input');
+            inputElement.style.visibility = 'hidden';
+            inputElement.setAttribute('type', 'file');
+
+            document.body.appendChild(inputElement);
+
+            const target = ev?.target as HTMLElement | undefined;
+
+            if (target) {
+                setVirtualParent(inputElement, target);
+            }
+
+            inputElement.click();
+            inputElement.onchange= (e) => {
+                if ((e.target as HTMLInputElement).files === null) {
+                    return
+                }
+                else {
+                    let files = (e.target as HTMLInputElement).files;
+                    let file = files?.item(0);
+
+                    if (file) {
+                    
+                        let reader = new FileReader();
+                        reader.onload = function(event) {
+                            const contents = event?.target?.result;
+                            const graphQResult = JSON.parse(contents as string) as IGraphQueryResult;
+                            if (checklistDoc){
+                                const doc = GraphServiceInstance.processResults(graphQResult, checklistDoc);
+                                setChecklistDoc(doc);
+                            }
+                        };
+            
+                        (e.target as HTMLInputElement).value = ''
+            
+                        reader.readAsText(file);
+                    } else {
+                        console.error(
+                          'File could not be uploaded. Please try again.'
+                        )
+                    }
+                }
+            }
+
+            if (target) {
+                setVirtualParent(inputElement, null);
+            }
+
+            setTimeout(() => {
+                inputElement.remove();
+            }, 10000);
+        });
+
+        
+    };
+
+    function downloadHelper(fileName: string, blob: Blob) {
+        // Create an anchor element and dispatch a click event on it
+        // to trigger a download
+        const a = document.createElement('a');
+        a.download = fileName;
+        a.href = window.URL.createObjectURL(blob);
+        const clickEvt = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        a.dispatchEvent(clickEvt);
+        a.remove();
+    }
 
     const getChecklistName = (): string => {
         if (checklistDoc && checklistDoc.metadata['name']) {
@@ -195,8 +262,9 @@ export default function Ft3asApp() {
                         onFilter={e => { setShowFilters(true) }}
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
-                        onDownloadCsvClick={e => { downloadCsv(); }}
+                        onDownloadCsVClick={e => { downloadCsv(); }}
                         onUploadReviewClick={e => { uploadFile(e); }}
+                        onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
                     />
                     <Text variant={'xxLarge'}>{getChecklistName()}</Text>
                     <Ft3asProgress

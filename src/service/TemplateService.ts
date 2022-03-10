@@ -31,7 +31,7 @@ class TemplateService {
 
     getAvailableTemplateNames(): string[] {
 
-        var result : string[] = [];
+        let result : string[] = [];
         this.parsed.checklists.forEach((element: ICheckList) => {
             result.push(element.name);
         });
@@ -39,8 +39,7 @@ class TemplateService {
     }
 
     getAvailableLanguagesforTemplate(checklistname : string): string[] {
-        console.log(this.parsed.checklists);
-        for (var element of this.parsed.checklists){
+        for (let element of this.parsed.checklists){
             if ( element.name === checklistname) {
                 return element.languages;
             }

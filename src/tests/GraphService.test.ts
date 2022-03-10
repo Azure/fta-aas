@@ -88,3 +88,48 @@ it('Can map multiple graph results to the graphQResult of the checklistItem', ()
     expect(item2inoutput?.graphQResult?.result).toBe(result2);
     expect(item2inoutput?.graphQResult?.id).toBe(id2);
 });
+
+it('Should not map in case guids dont match', () => {
+    //Arrange
+
+    let success1 = "success1";
+    let success2 = "success2";
+    let compliant1 = "compliant1";
+    let compliant2 = "compliant2";
+    let fail1 = "fail1";
+    let fail2 = "fail2";
+    let failure1 = "failure1";
+    let failure2 = "failure2";
+    let result1 = "result1";
+    let result2 = "result2";
+    let id1 = "id1";
+    let id2 = "id2";
+    let graphQResult : IGraphQueryResult = { 
+        metadata: {
+            format: "", timestamp: ""
+        },
+        checks: [
+            { guid: "otherguid", success: success1, compliant: compliant1, fail: fail1, failure: failure1, result: result1, id: id1 },
+            { guid: guid2, success: success2, compliant: compliant2, fail: fail2, failure: failure2, result: result2, id: id2 }
+        ]
+    };
+
+    //Act
+    let output = GraphServiceInstance.processResults(graphQResult, baseCheckListDoc);
+
+    //Assert
+    let item1inoutput = output.items.find(i => i.guid === guid1);
+    let item2inoutput = output.items.find(i => i.guid === guid2);
+    expect(item1inoutput?.graphQResult?.success).toBeUndefined();
+    expect(item1inoutput?.graphQResult?.compliant).toBeUndefined();
+    expect(item1inoutput?.graphQResult?.fail).toBeUndefined();
+    expect(item1inoutput?.graphQResult?.failure).toBeUndefined();
+    expect(item1inoutput?.graphQResult?.result).toBeUndefined();
+    expect(item1inoutput?.graphQResult?.id).toBeUndefined();
+    expect(item2inoutput?.graphQResult?.success).toBe(success2);
+    expect(item2inoutput?.graphQResult?.compliant).toBe(compliant2);
+    expect(item2inoutput?.graphQResult?.fail).toBe(fail2);
+    expect(item2inoutput?.graphQResult?.failure).toBe(failure2);
+    expect(item2inoutput?.graphQResult?.result).toBe(result2);
+    expect(item2inoutput?.graphQResult?.id).toBe(id2);
+});

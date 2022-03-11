@@ -1,6 +1,5 @@
 import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn } from "@fluentui/react";
 import { FormEvent, useEffect, useState } from "react";
-import internal from "stream";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { IStatus } from "../model/IStatus";
 

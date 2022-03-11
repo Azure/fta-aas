@@ -17,6 +17,7 @@ import { getAppInsights } from "../service/TelemetryService";
 import TelemetryProvider from '../service/telemetry-provider';
 import CsvGeneratorInstance from '../service/CsvGenerator';
 import Ft3asCharts from "./Ft3asCharts";
+import { IStatus } from "../model/IStatus";
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -39,6 +40,7 @@ export default function Ft3asApp() {
     const [percentComplete, setPercentComplete] = useState(0);
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
+    const [visibleStatuses, setVisibleStatuses] = useState<IStatus[]>();
     const [filterText, setFilterText] = useState('');
     const appInsightKey = process.env.REACT_APP_APP_INSIGHTS_KEY
 
@@ -82,6 +84,7 @@ export default function Ft3asApp() {
         setVisibleCategories(doc.categories);
         setVisibleSeverities(doc.severities);
         setIsModified(false);
+        setVisibleStatuses(doc.status);
     }
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
@@ -287,6 +290,7 @@ export default function Ft3asApp() {
                                     questionAnswered={definePercentComplete}
                                     visibleCategories={visibleCategories}
                                     visibleSeverities={visibleSeverities}
+                                    visibleStatuses={visibleStatuses}
                                     filterText={filterText}
                                 >
                                 </Ft3asChecklist>
@@ -302,9 +306,9 @@ export default function Ft3asApp() {
                         checklistDoc={checklistDoc}
                         categoriesChanged={setVisibleCategories}
                         severitiesChanged={setVisibleSeverities}
+                        statusesChanged={setVisibleStatuses}
                         filterTextChanged={setFilterText}
                         onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
-
 
                     <Ft3AsTemplateSelector
                         isOpen={showSelectTemplate}

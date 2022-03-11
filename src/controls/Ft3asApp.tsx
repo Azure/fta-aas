@@ -70,7 +70,11 @@ export default function Ft3asApp() {
 
     const changeTemplate = async (templateUrl: string) => {
         const doc = await TemplateServiceInstance.openTemplate(templateUrl);
+        updateDocument(doc);
+        
+    }
 
+    const updateDocument=(doc: IChecklistDocument)=>{
         setChecklistDoc({
             ...doc,
             items: doc.items.map<ICheckItemAnswered>((i: ICheckItemAnswered) => {
@@ -85,6 +89,7 @@ export default function Ft3asApp() {
         setVisibleSeverities(doc.severities);
         setIsModified(false);
         setVisibleStatuses(doc.status);
+
     }
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
@@ -149,8 +154,7 @@ export default function Ft3asApp() {
                         reader.onload = function (event) {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
-                            setChecklistDoc(doc)
-                            setIsModified(false);
+                            updateDocument(doc);
                         };
 
                         (e.target as HTMLInputElement).value = ''
@@ -209,7 +213,7 @@ export default function Ft3asApp() {
                             const graphQResult = JSON.parse(contents as string) as IGraphQueryResult;
                             if (checklistDoc) {
                                 const doc = GraphServiceInstance.processResults(graphQResult, checklistDoc);
-                                setChecklistDoc(doc);
+                                updateDocument(doc);
                             }
                         };
 

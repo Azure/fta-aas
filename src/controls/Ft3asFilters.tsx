@@ -1,8 +1,9 @@
-import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
+import { IInputProps, ITag, Panel, TagPicker, IBasePicker } from '@fluentui/react';
 import * as React from 'react';
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { ISeverity } from '../model/ISeverity';
+import { IStatus } from '../model/IStatus';
 import { TextField } from '@fluentui/react/lib/TextField';
 
 
@@ -26,12 +27,13 @@ interface Ft3asFiltersProps {
     isOpen: boolean;
     categoriesChanged?: (selectedCategories: ICategory[]) => void
     severitiesChanged?: (selectedSeverities: ISeverity[]) => void
+    statusesChanged?: (selectedStatuses: IStatus[]) => void
     filterTextChanged?: (filterText: string) => void
     onClose: () => void;
 }
 export default function Ft3asFilters(props: Ft3asFiltersProps) {
 
-    const { categories, severities } = props.checklistDoc;
+    const { categories, severities, status } = props.checklistDoc;
     const { isOpen } = props;
     const availableTags = categories.map<ITag>(c => {
         return { key: c.name, name: c.name }
@@ -39,6 +41,14 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     const availableSeverities = severities.map<ITag>(s => {
         return { key: s.name, name: s.name }
     });
+    const availableStatuses = status.map<ITag>(s => {
+        return { key: s.name, name: s.name }
+    });
+
+    const [excludedTags, setExcludedTags] = React.useState<ITag[]>([]);
+    const [excludedSeverities, setExcludedSeverities] = React.useState<ITag[]>([]);
+    const [excludedStatuses, setExcludedStatuses] = React.useState<ITag[]>([]);
+    
 
     const filterSuggestedCategoryTags = (filterText: string, tagList?: ITag[]): ITag[] => {
         return filterText
@@ -47,9 +57,43 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
             : [];
     };
 
+    const filterExcludedCategoryTags = (filterText: string, tagList?: ITag[]): ITag[] => {
+        console.log(filterText)
+        console.log(tagList)
+        return filterText
+            ? excludedTags.filter(
+                tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
+            : [];
+    };
+
     const filterSuggestedSeveritiesTags = (filterText: string, tagList?: ITag[]): ITag[] => {
         return filterText
             ? availableSeverities.filter(
+                tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
+            : [];
+    };
+
+    const filterExcludedSeverityTags = (filterText: string, tagList?: ITag[]): ITag[] => {
+        console.log(filterText)
+        console.log(tagList)
+        return filterText
+            ? excludedSeverities.filter(
+                tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
+            : [];
+    };
+
+    const filterSuggestedStatusesTags = (filterText: string, tagList?: ITag[]): ITag[] => {
+        return filterText
+            ? availableStatuses.filter(
+                tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
+            : [];
+    };
+
+    const filterExcludedStatusesTags = (filterText: string, tagList?: ITag[]): ITag[] => {
+        console.log(filterText)
+        console.log(tagList)
+        return filterText
+            ? excludedStatuses.filter(
                 tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
             : [];
     };
@@ -62,6 +106,12 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
                 }
             }) ?? []);
         }
+
+        let _excludedTags : ITag[] = [];
+        setExcludedTags([]);
+        availableTags.forEach( (tag: ITag) => { if(!listContainsTagList(tag, items)) { _excludedTags.push(tag)} });
+        setExcludedTags(_excludedTags);
+
     };
 
     const onSeveritiesPickerChanged = (items?: ITag[] | undefined) => {
@@ -73,6 +123,27 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
                 }
             }) ?? []);
         }
+
+        let _excludedSeverities : ITag[] = [];
+        setExcludedSeverities([]);
+        availableSeverities.forEach( (tag: ITag) => { if(!listContainsTagList(tag, items)) { _excludedSeverities.push(tag)} });
+        setExcludedSeverities(_excludedSeverities);
+    };
+
+    const onStatusesPickerChanged = (items?: ITag[] | undefined) => {
+        if (props.statusesChanged) {
+            props.statusesChanged(items?.map<IStatus>(item => {
+                return {
+                    name: item.name,
+                    description: item.name
+                }
+            }) ?? []);
+        }
+
+        let _excludedStatuses : ITag[] = [];
+        setExcludedStatuses([]);
+        availableStatuses.forEach( (tag: ITag) => { if(!listContainsTagList(tag, items)) { _excludedStatuses.push(tag)} });
+        setExcludedStatuses(_excludedStatuses);
     };
   
     const _onChangeText = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text?: string): void => {
@@ -102,16 +173,28 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
                     suggestionsHeaderText: 'Suggested categories',
                     noResultsFoundText: 'No categories found'
                 }}
-
                 defaultSelectedItems={availableTags}
                 inputProps={{
                     ...inputProps,
                     id: 'picker1',
                 }}
-
                 onChange={onCategoriesPickerChanged}
 
             />
+
+            <label htmlFor='picker3'>Excluded categories</label>
+            <TagPicker
+                removeButtonAriaLabel="Remove"
+                selectionAriaLabel="Excluded categories"
+                onResolveSuggestions={filterExcludedCategoryTags}
+                selectedItems={excludedTags}
+                getTextFromItem={getTextFromItem}
+                inputProps={{
+                    ...inputProps,
+                    id: 'picker3',
+                }}
+            />
+
             <label htmlFor='picker2'>Included severities</label>
             <TagPicker
                 removeButtonAriaLabel="Remove"
@@ -134,6 +217,55 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
                 }}
                 onChange={onSeveritiesPickerChanged}
             />
+
+            <label htmlFor='picker4'>Excluded severities</label>
+            <TagPicker
+                removeButtonAriaLabel="Remove"
+                selectionAriaLabel="Excluded severities"
+                onResolveSuggestions={filterExcludedSeverityTags}
+                selectedItems={excludedSeverities}
+                getTextFromItem={getTextFromItem}
+                inputProps={{
+                    ...inputProps,
+                    id: 'picker4',
+                }}
+            />
+
+            <label htmlFor='picker5'>Included statuses</label>
+            <TagPicker
+                removeButtonAriaLabel="Remove"
+                selectionAriaLabel="Included statuses"
+                
+                onItemSelected={(selectedItem?: ITag) => {
+                    console.debug('selected item ' + selectedItem?.name);
+                    return selectedItem ?? null;
+                }}
+                onResolveSuggestions={filterSuggestedStatusesTags}
+                getTextFromItem={getTextFromItem}
+                pickerSuggestionsProps={{
+                    suggestionsHeaderText: 'Suggested statuses',
+                    noResultsFoundText: 'No statuses found'
+                }}
+                defaultSelectedItems={availableStatuses}
+                inputProps={{
+                    ...inputProps,
+                    id: 'picker5',
+                }}
+                onChange={onStatusesPickerChanged}
+            />
+
+            <label htmlFor='picker6'>Excluded statuses</label>
+            <TagPicker
+                removeButtonAriaLabel="Remove"
+                selectionAriaLabel="Excluded statuses"
+                onResolveSuggestions={filterExcludedStatusesTags}
+                selectedItems={excludedStatuses}
+                getTextFromItem={getTextFromItem}
+                inputProps={{
+                    ...inputProps,
+                    id: 'picker6',
+                }}
+            />            
         </Panel>
     );
 }

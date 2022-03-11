@@ -6,7 +6,6 @@ import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
 import { Label, Separator, Stack } from '@fluentui/react';
-import Ft3asItemEdition from './Ft3asItemEdition';
 import { ISeverity } from '../model/ISeverity';
 import Ft3asItemDetail from './Ft3asItemDetail';
 

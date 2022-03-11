@@ -8,7 +8,10 @@ import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
 import { Label, Separator, Stack } from '@fluentui/react';
 import Ft3asItemEdition from './Ft3asItemEdition';
 import { ISeverity } from '../model/ISeverity';
+
 import { IStatus } from '../model/IStatus';
+
+import Ft3asItemDetail from './Ft3asItemDetail';
 
 const classNames = mergeStyleSets({
   controlWrapper: {
@@ -252,7 +255,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     return (
       <Stack>
         <Stack>
-          {currentItem ? (
+          {/* {currentItem ? (
             <Ft3asItemEdition
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
@@ -261,7 +264,17 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
               onPrevious={this.onPrevious.bind(this)}
               onDiscard={this.onDiscardEdition.bind(this)} />
 
-          ) : <></>}
+          ) : <></>} */}
+          {currentItem ? (
+            <Ft3asItemDetail
+              allowedStatus={this.props.checklistDoc?.status ?? []}
+              item={currentItem}
+              onItemChanged={this.onItemChanged.bind(this)}
+              onNext={this.onNext.bind(this)}
+              onPrevious={this.onPrevious.bind(this)}
+              onDiscard={this.onDiscardEdition.bind(this)} />
+
+          ) : <></>}        
         </Stack>
         <Stack>
           <Separator>Full list</Separator>

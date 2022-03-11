@@ -92,22 +92,9 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
         }
     ];
 
-    const _overflowItems: ICommandBarItemProps[] = [
-        { key: 'move', text: 'Move to...', onClick: () => console.log('Move to'), iconProps: { iconName: 'MoveToFolder' } },
-        { key: 'copy', text: 'Copy to...', onClick: () => console.log('Copy to'), iconProps: { iconName: 'Copy' } },
-        { key: 'rename', text: 'Rename...', onClick: () => console.log('Rename'), iconProps: { iconName: 'Edit' } },
-    ];
+    const _overflowItems: ICommandBarItemProps[] = [];
 
     const _farItems: ICommandBarItemProps[] = [
-        {
-            key: 'tile',
-            text: 'Grid view',
-            // This needs an ariaLabel since it's icon-only
-            ariaLabel: 'Grid view',
-            iconOnly: true,
-            iconProps: { iconName: 'Tiles' },
-            onClick: () => console.log('Tiles'),
-        },
         {
             key: 'info',
             text: 'Info',

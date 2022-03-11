@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Announced } from '@fluentui/react/lib/Announced';
-import { DetailsList, DetailsListLayoutMode, Selection, SelectionMode, IColumn } from '@fluentui/react/lib/DetailsList';
+import { DetailsList, DetailsListLayoutMode, Selection, SelectionMode, IColumn, IGroup } from '@fluentui/react/lib/DetailsList';
 import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
@@ -34,6 +34,7 @@ export interface Ft3asChecklistState {
   selectionDetails: string;
   announcedMessage?: string;
   currentItem?: ICheckItemAnswered;
+  groups: IGroup[];
 }
 
 interface Ft3asChecklistProps {
@@ -49,7 +50,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   private _selection: Selection;
 
   // private _allItems: ICheckItemAnswered[];
-
   constructor(props: Ft3asChecklistProps) {
     super(props);
 
@@ -152,22 +152,38 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     });
 
     const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities, this.props.visibleStatuses, this.props.filterText);
+    const groups = this.setGroups(items, this.props.visibleCategories);
+
     this.state = {
       allItems: items,
       items: items,
       columns: columns,
       selectionDetails: this._getSelectionDetails(),
       announcedMessage: "announce message",
+      groups: groups
     };
     // this.setState(this.state);
 
   }
 
+  private setGroups(items: ICheckItemAnswered[], visibleCategories?: ICategory[])
+  {
+    const groups : IGroup[] = [];
+    visibleCategories?.forEach(item => 
+      {
+        let _count = items.filter(i=> i.category == item.name).length;
+        let _startIndex = items.map(function(e) { return e.category; }).indexOf(item.name);
+        groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
+      });
+      return groups;
+  }
+
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
     const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities, props.visibleStatuses, props.filterText);
-
+    const groups = this.setGroups(items, props.visibleCategories);
     this.setState({
-      items: items
+      items: items,
+      groups: groups
     });
   }
 
@@ -199,11 +215,13 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       let newItems = this.props.checklistDoc?.items ?? [];
       newItems[index] = item;
       let items = this.filterSourceItems(newItems, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities);
+      const groups = this.setGroups(items, this.props.checklistDoc?.categories);
       const notAnswered = this.props.checklistDoc?.status[0];
       const currentProgress = items.filter(i => i.status !== notAnswered).length / items.length;
       this.setState({
         allItems: { ...newItems },
-        items: items
+        items: items,
+        groups: groups
       });
       this.questionAnswered(currentProgress);
     } else {
@@ -249,7 +267,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
 
   public render() {
-    const { columns, items, selectionDetails, announcedMessage, currentItem } = this.state;
+    const { columns, items, selectionDetails, announcedMessage, currentItem, groups } = this.state;
 
     return (
       <Stack>
@@ -289,6 +307,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             <MarqueeSelection selection={this._selection} >
               <DetailsList
                 items={items}
+                groups={groups}
+                groupProps={{
+                  showEmptyGroups: true,
+                }}
                 columns={columns}
                 selectionMode={SelectionMode.single}
                 getKey={this._getKey}

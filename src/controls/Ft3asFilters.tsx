@@ -1,7 +1,6 @@
 import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
 import * as React from 'react';
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
-import { ICheckItemAnswered } from "../model/ICheckItem";
 import { ISeverity } from '../model/ISeverity';
 import { TextField } from '@fluentui/react/lib/TextField';
 

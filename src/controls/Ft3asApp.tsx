@@ -1,4 +1,4 @@
-import { FocusZone, IStackStyles, IStackTokens, Stack, Text } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Label, Pivot, PivotItem, Stack, Text, } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
@@ -16,6 +16,7 @@ import { IGraphQueryResult } from "../model/IGraphQueryResult";
 import { getAppInsights } from "../service/TelemetryService";
 import TelemetryProvider from '../service/telemetry-provider';
 import CsvGeneratorInstance from '../service/CsvGenerator';
+import Ft3asCharts from "./Ft3asCharts";
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
@@ -25,13 +26,13 @@ const stackStyles: Partial<IStackStyles> = {
         marginLeft: '25px',
         marginRight: '25px',
         // margin: '100 auto',
-        textAlign: 'center',
+        textAlign: 'left',
         color: '#605e5c',
     },
 };
 
 export default function Ft3asApp() {
-
+    const [isModified, setIsModified] = useState(false);
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
@@ -39,6 +40,7 @@ export default function Ft3asApp() {
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
     const [filterText, setFilterText] = useState('');
+    const appInsightKey = process.env.REACT_APP_APP_INSIGHTS_KEY
 
     let appInsights = null;
 
@@ -79,6 +81,7 @@ export default function Ft3asApp() {
         });
         setVisibleCategories(doc.categories);
         setVisibleSeverities(doc.severities);
+        setIsModified(false);
     }
     // useEffect(()=>{setChecklistDoc(checklistDoc)}, [checklistDoc]);
 
@@ -91,6 +94,7 @@ export default function Ft3asApp() {
         // Create an anchor element and dispatch a click event on it
         // to trigger a download
         downloadHelper(fileName, blob);
+        setIsModified(false);
     }
 
     const downloadCsv = () => {
@@ -111,7 +115,7 @@ export default function Ft3asApp() {
         CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
     }
 
-    const uploadFile = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined) => {
+    const uploadFile = (ev: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement> | undefined) => {
         ev?.persist();
 
         Promise.resolve().then(() => {
@@ -143,6 +147,7 @@ export default function Ft3asApp() {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
                             setChecklistDoc(doc)
+                            setIsModified(false);
                         };
 
                         (e.target as HTMLInputElement).value = ''
@@ -185,7 +190,7 @@ export default function Ft3asApp() {
             }
 
             inputElement.click();
-            inputElement.onchange= (e) => {
+            inputElement.onchange = (e) => {
                 if ((e.target as HTMLInputElement).files === null) {
                     return
                 }
@@ -194,23 +199,23 @@ export default function Ft3asApp() {
                     let file = files?.item(0);
 
                     if (file) {
-                    
+
                         let reader = new FileReader();
-                        reader.onload = function(event) {
+                        reader.onload = function (event) {
                             const contents = event?.target?.result;
                             const graphQResult = JSON.parse(contents as string) as IGraphQueryResult;
-                            if (checklistDoc){
+                            if (checklistDoc) {
                                 const doc = GraphServiceInstance.processResults(graphQResult, checklistDoc);
                                 setChecklistDoc(doc);
                             }
                         };
-            
+
                         (e.target as HTMLInputElement).value = ''
-            
+
                         reader.readAsText(file);
                     } else {
                         console.error(
-                          'File could not be uploaded. Please try again.'
+                            'File could not be uploaded. Please try again.'
                         )
                     }
                 }
@@ -225,7 +230,7 @@ export default function Ft3asApp() {
             }, 10000);
         });
 
-        
+
     };
 
     function downloadHelper(fileName: string, blob: Blob) {
@@ -252,15 +257,17 @@ export default function Ft3asApp() {
     }
 
 
-    const definePercentComplete=(percentComplete:number) => {
+    const definePercentComplete = (percentComplete: number) => {
         setPercentComplete(percentComplete);
+        setIsModified(true);
     }
 
     return (
         <BrowserRouter>
-            <TelemetryProvider instrumentationKey="INSTRUMENTATION_KEY" after={() => { appInsights = getAppInsights() }}>
+            <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
                     <Ft3asToolbar
+                        isModified={isModified}
                         onFilter={e => { setShowFilters(true) }}
                         onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
                         onDownloadReviewClick={e => { downloadFile(); }}
@@ -269,9 +276,27 @@ export default function Ft3asApp() {
                         onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
                     />
                     <Text variant={'xxLarge'}>{getChecklistName()}</Text>
-                    <Ft3asProgress
-                        percentComplete={percentComplete}
-                    />
+                    <FocusZone>
+                        <Pivot aria-label="Checklist">
+                            <PivotItem headerText="Checklist" itemIcon="GridViewSmall">
+
+
+                                <Ft3asProgress percentComplete={percentComplete} />
+                                <Ft3asChecklist
+                                    checklistDoc={checklistDoc}
+                                    questionAnswered={definePercentComplete}
+                                    visibleCategories={visibleCategories}
+                                    visibleSeverities={visibleSeverities}
+                                    filterText={filterText}
+                                >
+                                </Ft3asChecklist>
+                            </PivotItem>
+                            <PivotItem headerText="Dashboard" itemIcon="BIDashboard">
+                                <Ft3asCharts checklistDoc={checklistDoc} />
+                            </PivotItem>
+                        </Pivot>
+                    </FocusZone>
+
                     {checklistDoc ? (<Ft3asFilters
                         isOpen={showFilters}
                         checklistDoc={checklistDoc}
@@ -280,16 +305,7 @@ export default function Ft3asApp() {
                         filterTextChanged={setFilterText}
                         onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
-                    <FocusZone>
-                        <Ft3asChecklist
-                            checklistDoc={checklistDoc}
-                            questionAnswered={definePercentComplete}
-                            visibleCategories={visibleCategories}
-                            visibleSeverities={visibleSeverities}
-                            filterText={filterText}
-                        >
-                        </Ft3asChecklist>
-                    </FocusZone>
+
                     <Ft3AsTemplateSelector
                         isOpen={showSelectTemplate}
                         onTemplateSelected={onTemplateSelected}

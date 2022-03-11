@@ -23,12 +23,6 @@ const classNames = mergeStyleSets({
     marginBottom: '20px',
   },
 });
-const controlStyles = {
-  root: {
-    margin: '0 30px 20px 0',
-    maxWidth: '600px',
-  },
-};
 
 export interface Ft3asChecklistState {
   columns: IColumn[];
@@ -185,12 +179,12 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       console.log('no severities??');
     }
 
-    const _filterText= filterText?.toLowerCase();
+    const _filterText = filterText?.toLowerCase();
 
     return items.filter(item =>
       (visibleCategories === undefined || visibleCategories.findIndex(c => c.name === item.category) !== -1)
       && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase()) !== -1)
-      && (_filterText === undefined || _filterText.trim() == '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
+      && (_filterText === undefined || _filterText.trim() === '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
   }
   private onItemChanged(item: ICheckItemAnswered) {
     console.debug(`comment: ${item.comments} status: ${item.status}`)
@@ -236,13 +230,13 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   private onPrevious(currentGuid: string) {
     const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);
     console.debug(`Current index for ${currentGuid} -> (${currentIndex}/${this.state.items.length})`)
-    if (currentIndex !== -1 && currentIndex > 1) {
+    if (currentIndex !== -1 && currentIndex > 0) {
       this._selection.setIndexSelected(currentIndex, false, false);
       this._selection.setIndexSelected(currentIndex - 1, true, true);
     }
   }
 
-  private onDiscardEdition(){
+  private onDiscardEdition() {
     this._selection.toggleIndexSelected(this._selection.getSelectedIndices()[0]);
   }
 

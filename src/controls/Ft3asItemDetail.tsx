@@ -1,4 +1,4 @@
-import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox } from "@fluentui/react";
+import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn } from "@fluentui/react";
 import { FormEvent, useEffect, useState } from "react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { IStatus } from "../model/IStatus";
@@ -10,7 +10,7 @@ const horizontalGapStackTokens: IStackTokens = {
     padding: 10,
 };
 
-interface Ft3asItemEditionProps {
+interface Ft3asItemDetailProps {
     item: ICheckItemAnswered;
     allowedStatus: IStatus[];
     onItemChanged?: (itemchanged: ICheckItemAnswered) => void;
@@ -18,7 +18,7 @@ interface Ft3asItemEditionProps {
     onNext?: (currentGuid: string) => void;
     onPrevious?: (currentGuid: string) => void;
 }
-export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
+export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
     const statusOptions: IComboBoxOption[] = props.allowedStatus.map<IComboBoxOption>(s => {
         return {
             key: s.name,
@@ -79,6 +79,61 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
             props.onNext(props.item.guid);
         }
     }
+
+    const getColumnskeleton = (ctr: number, propname: string) : IColumn => {
+        return {
+            key: `column${ctr}`,
+            name: propname,
+            fieldName: propname,
+            minWidth: 70,
+            maxWidth: 90,
+            isRowHeader: true,
+            isResizable: true,
+            isSorted: true,
+            isSortedDescending: false,
+            sortAscendingAriaLabel: 'Sorted A to Z',
+            sortDescendingAriaLabel: 'Sorted Z to A',
+            data: 'string',
+            isPadded: true,
+        };
+    };
+
+    const detailColumns2 = () : IColumn[] => {
+        let cols : IColumn[] = [];
+        let ctr = 1;
+
+        if (! props.item.graphQResult) return cols;
+
+        let result = props.item.graphQResult[0];
+        if (!result) return cols;
+
+        if (result.success){
+            cols.push(getColumnskeleton(ctr, 'success'));
+            ctr++;           
+        }
+        if (result.compliant){
+            cols.push(getColumnskeleton(ctr, 'compliant'));
+            ctr++;           
+        }
+        if (result.fail){
+            cols.push(getColumnskeleton(ctr, 'fail'));
+            ctr++;           
+        }
+        if (result.failure){
+            cols.push(getColumnskeleton(ctr, 'failure'));
+            ctr++;           
+        }        
+        if (result.id){
+            cols.push(getColumnskeleton(ctr, 'id'));
+            ctr++;           
+        }
+        if (result.result){
+            cols.push(getColumnskeleton(ctr, 'result'));
+            ctr++;           
+        }                        
+        return cols;
+    };
+
     return (
         <Stack horizontal tokens={{
             childrenGap: 20
@@ -128,6 +183,13 @@ export default function Ft3asItemEdition(props: Ft3asItemEditionProps) {
                                 selectedKey={itemStatus?.name}
                                 onChange={onStatusChanged} />
                         </Stack.Item>
+                    </Stack>
+                    <Stack>
+                    {props.item.graphQResult ? (
+                        <DetailsList 
+                        columns={detailColumns2()}
+                        items={props.item.graphQResult} />
+                    ) : <></>}
                     </Stack>
                     <Stack horizontal tokens={{
                         childrenGap: 10

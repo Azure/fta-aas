@@ -1,4 +1,4 @@
-import { FocusZone, IStackStyles, IStackTokens, Label, Pivot, PivotItem, Stack, Text, } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Pivot, PivotItem, Stack, Text, } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";

@@ -2,6 +2,7 @@ import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
 import * as React from 'react';
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import { ISeverity } from '../model/ISeverity';
+import { TextField } from '@fluentui/react/lib/TextField';
 
 
 const getTextFromItem = (item: ITag) => item.name;
@@ -24,6 +25,7 @@ interface Ft3asFiltersProps {
     isOpen: boolean;
     categoriesChanged?: (selectedCategories: ICategory[]) => void
     severitiesChanged?: (selectedSeverities: ISeverity[]) => void
+    filterTextChanged?: (filterText: string) => void
     onClose: () => void;
 }
 export default function Ft3asFilters(props: Ft3asFiltersProps) {
@@ -71,6 +73,16 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
             }) ?? []);
         }
     };
+  
+    const _onChangeText = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text?: string): void => {
+        if (props.filterTextChanged && text) {
+            props.filterTextChanged(text);
+        }
+        else if (props.filterTextChanged)
+        {
+            props.filterTextChanged('');
+        }
+    };
 
     return (
         <Panel
@@ -78,6 +90,7 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
             isBlocking={false}
             onDismiss={props.onClose}
         >
+            <TextField label="Filter by name:" onChange={_onChangeText} readOnly={false} />
             <label htmlFor='picker1'>Included categories</label>
             <TagPicker
                 removeButtonAriaLabel="Remove"

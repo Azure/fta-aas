@@ -7,6 +7,9 @@ import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
 import { Label, Separator, Stack } from '@fluentui/react';
 import { ISeverity } from '../model/ISeverity';
+
+import { IStatus } from '../model/IStatus';
+
 import Ft3asItemDetail from './Ft3asItemDetail';
 
 const classNames = mergeStyleSets({
@@ -38,6 +41,7 @@ interface Ft3asChecklistProps {
   questionAnswered?: (percentComplete: number) => void;
   visibleCategories?: ICategory[];
   visibleSeverities?: ISeverity[];
+  visibleStatuses?: IStatus[];
   filterText?: string;
 }
 
@@ -147,7 +151,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       },
     });
 
-    const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities, this.props.filterText);
+    const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities, this.props.visibleStatuses, this.props.filterText);
     this.state = {
       allItems: items,
       items: items,
@@ -160,7 +164,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
-    const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities, props.filterText);
+    const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities, props.visibleStatuses, props.filterText);
 
     this.setState({
       items: items
@@ -173,19 +177,21 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
   }
 
-  private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], filterText?: string): ICheckItemAnswered[] {
+  private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[], filterText?: string): ICheckItemAnswered[] {
 
     if (!visibleSeverities) {
       console.log('no severities??');
     }
 
-    const _filterText = filterText?.toLowerCase();
-
+    const _filterText= filterText?.toLowerCase();
+    
     return items.filter(item =>
       (visibleCategories === undefined || visibleCategories.findIndex(c => c.name === item.category) !== -1)
       && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase()) !== -1)
-      && (_filterText === undefined || _filterText.trim() === '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
+      && (visibleStatuses === undefined || visibleStatuses.findIndex(s => item.status && s.name.toLowerCase() === item.status.name.toLowerCase()) !== -1)
+      && (_filterText === undefined || _filterText.trim() == '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
   }
+  
   private onItemChanged(item: ICheckItemAnswered) {
     console.debug(`comment: ${item.comments} status: ${item.status}`)
     const index = this.props.checklistDoc?.items.findIndex(c => c.guid === item.guid) ?? -1;

@@ -1,4 +1,4 @@
-import { IInputProps, ITag, Panel, TagPicker, IBasePicker } from '@fluentui/react';
+import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
 import * as React from 'react';
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import { ISeverity } from '../model/ISeverity';

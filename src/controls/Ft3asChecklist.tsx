@@ -205,7 +205,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       (visibleCategories === undefined || visibleCategories.findIndex(c => c.name === item.category) !== -1)
       && (visibleSeverities === undefined || visibleSeverities.findIndex(s => s.name.toLowerCase() === item.severity.toString().toLowerCase()) !== -1)
       && (visibleStatuses === undefined || visibleStatuses.findIndex(s => item.status && s.name.toLowerCase() === item.status.name.toLowerCase()) !== -1)
-      && (_filterText === undefined || _filterText.trim() == '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
+      && (_filterText === undefined || _filterText.trim() === '' || item.category.toLowerCase().indexOf(_filterText) !== -1 || item.subcategory.toLowerCase().indexOf(_filterText) !== -1 || item.text.toLowerCase().indexOf(_filterText) !== -1 || item.severity.toString().toLowerCase().indexOf(_filterText) !== -1));
   }
   
   private onItemChanged(item: ICheckItemAnswered) {

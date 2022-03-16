@@ -178,6 +178,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
   private prepareGroups(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[],  groupingField?: string){
     const groups : IGroup[] = [];
+
     if (groupingField == 'severity')
     {
       visibleSeverities?.forEach(item => 
@@ -207,7 +208,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
 
     return groups;
-
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {

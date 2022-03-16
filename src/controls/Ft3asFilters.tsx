@@ -1,4 +1,4 @@
-import { IInputProps, ITag, Panel, TagPicker } from '@fluentui/react';
+import { IInputProps, ITag, Panel, TagPicker, Dropdown, IDropdownOption, IDropdownStyles } from '@fluentui/react';
 import * as React from 'react';
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
 import { ISeverity } from '../model/ISeverity';
@@ -15,6 +15,16 @@ const listContainsTagList = (tag: ITag, tagList?: ITag[]) => {
     return tagList.some(compareTag => compareTag.key === tag.key);
 };
 
+const dropdownStyles: Partial<IDropdownStyles> = {
+    dropdown: { width: 290 },
+  };
+  
+  const options: IDropdownOption[] = [
+    { key: 'category', text: 'Category' },
+    { key: 'status', text: 'Status' },
+    { key: 'severity', text: 'Severity' },
+  ];
+
 const inputProps: IInputProps = {
     onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
     onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called'),
@@ -28,6 +38,7 @@ interface Ft3asFiltersProps {
     severitiesChanged?: (selectedSeverities: ISeverity[]) => void
     statusesChanged?: (selectedStatuses: IStatus[]) => void
     filterTextChanged?: (filterText: string) => void
+    groupChange?: (option: IDropdownOption<any>) => void
     onClose: () => void;
 }
 export default function Ft3asFilters(props: Ft3asFiltersProps) {
@@ -47,6 +58,7 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     const [excludedTags, setExcludedTags] = React.useState<ITag[]>([]);
     const [excludedSeverities, setExcludedSeverities] = React.useState<ITag[]>([]);
     const [excludedStatuses, setExcludedStatuses] = React.useState<ITag[]>([]);
+    const [groupingField, setGroupingField] = React.useState<IDropdownOption>(options[0]);
     
 
     const filterSuggestedCategoryTags = (filterText: string, tagList?: ITag[]): ITag[] => {
@@ -57,8 +69,6 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     };
 
     const filterExcludedCategoryTags = (filterText: string, tagList?: ITag[]): ITag[] => {
-        console.log(filterText)
-        console.log(tagList)
         return filterText
             ? excludedTags.filter(
                 tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
@@ -73,8 +83,6 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     };
 
     const filterExcludedSeverityTags = (filterText: string, tagList?: ITag[]): ITag[] => {
-        console.log(filterText)
-        console.log(tagList)
         return filterText
             ? excludedSeverities.filter(
                 tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
@@ -89,8 +97,6 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     };
 
     const filterExcludedStatusesTags = (filterText: string, tagList?: ITag[]): ITag[] => {
-        console.log(filterText)
-        console.log(tagList)
         return filterText
             ? excludedStatuses.filter(
                 tag => tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 && !listContainsTagList(tag, tagList))
@@ -155,12 +161,26 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
         }
     };
 
+    const onGroupChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption<any> | undefined, index?: number | undefined): void => {        
+        if (props.groupChange && option) {
+            setGroupingField(option);
+            props.groupChange(option);
+        }
+    };
+
     return (
         <Panel
             isOpen={isOpen}
             isBlocking={false}
             onDismiss={props.onClose}
         >
+            <Dropdown
+              label="Group by: "
+              selectedKey={groupingField ? groupingField.key : undefined}
+              options={options}
+              styles={dropdownStyles}
+              onChange={onGroupChange}
+            />
             <TextField label="Filter by name:" onChange={_onChangeText} readOnly={false} />
             <label htmlFor='picker1'>Included categories</label>
             <TagPicker

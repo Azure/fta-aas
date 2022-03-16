@@ -5,7 +5,7 @@ import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
-import { Label, Separator, Stack } from '@fluentui/react';
+import { Label, Separator, Stack, Dropdown, IDropdownOption, IDropdownStyles } from '@fluentui/react';
 import { ISeverity } from '../model/ISeverity';
 
 import { IStatus } from '../model/IStatus';
@@ -35,6 +35,7 @@ export interface Ft3asChecklistState {
   announcedMessage?: string;
   currentItem?: ICheckItemAnswered;
   groups: IGroup[];
+  //groupingField: IDropdownOption;
 }
 
 interface Ft3asChecklistProps {
@@ -44,6 +45,7 @@ interface Ft3asChecklistProps {
   visibleSeverities?: ISeverity[];
   visibleStatuses?: IStatus[];
   filterText?: string;
+  groupingField?: IDropdownOption;
 }
 
 export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asChecklistState> {
@@ -75,8 +77,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
         maxWidth: 150,
         isRowHeader: true,
         isResizable: true,
-        isSorted: true,
-        isSortedDescending: false,
         sortAscendingAriaLabel: 'Sorted A to Z',
         sortDescendingAriaLabel: 'Sorted Z to A',
         onColumnClick: this._onColumnClick,
@@ -152,38 +152,71 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     });
 
     const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities, this.props.visibleStatuses, this.props.filterText);
-    const groups = this.setGroups(items, this.props.visibleCategories);
+    const result = this.setGroups(items, this.props.visibleCategories, this.props.visibleSeverities, this.props.visibleStatuses, this.props.groupingField?.key.toString(), columns);
 
     this.state = {
-      allItems: items,
-      items: items,
-      columns: columns,
+      allItems: result.items,
+      items: result.items,
+      columns: result.columns,
       selectionDetails: this._getSelectionDetails(),
       announcedMessage: "announce message",
-      groups: groups
+      groups: result.groups,
     };
+
     // this.setState(this.state);
 
   }
 
-  private setGroups(items: ICheckItemAnswered[], visibleCategories?: ICategory[])
+  private setGroups(initialItems: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[],  groupingField?: string, columns?: IColumn[])
   {
+    let newColumns = setHeader(columns!, groupingField!)
+    let items = _copyAndSort(initialItems,groupingField!, groupingField!, true);
+    let groups = this.prepareGroups(items, visibleCategories, visibleSeverities, visibleStatuses, groupingField)
+
+    return {groups: groups, items: items, columns: newColumns};
+  }
+
+  private prepareGroups(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[],  groupingField?: string){
     const groups : IGroup[] = [];
-    visibleCategories?.forEach(item => 
-      {
-        let _count = items.filter(i=> i.category == item.name).length;
-        let _startIndex = items.map(function(e) { return e.category; }).indexOf(item.name);
-        groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
-      });
-      return groups;
+    if (groupingField == 'severity')
+    {
+      visibleSeverities?.forEach(item => 
+        {
+          let _count = items.filter(i=> i.severity.toString() == item.name).length;
+          let _startIndex = items.map(function(e) { return e.severity.toString(); }).indexOf(item.name);
+          groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
+        });
+    }
+    else if (groupingField == 'status')
+    {
+      visibleStatuses?.forEach(item => 
+        {
+          let _count = items.filter(i=> i.status?.name == item.name).length;
+          let _startIndex = items.map(function(e) { return e.status?.name; }).indexOf(item.name);
+          groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
+        });
+    }
+    else
+    {
+      visibleCategories?.forEach(item => 
+        {
+          let _count = items.filter(i=> i.category == item.name).length;
+          let _startIndex = items.map(function(e) { return e.category; }).indexOf(item.name);
+          groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
+        });
+    }
+
+    return groups;
+
   }
 
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
     const items = this.filterSourceItems(props.checklistDoc?.items ?? [], props.visibleCategories, props.visibleSeverities, props.visibleStatuses, props.filterText);
-    const groups = this.setGroups(items, props.visibleCategories);
+    const result = this.setGroups(items, props.visibleCategories, props.visibleSeverities, props.visibleStatuses, props.groupingField?.key.toString(), this.state.columns);
     this.setState({
-      items: items,
-      groups: groups
+      items: result.items,
+      groups: result.groups,
+      columns: result.columns
     });
   }
 
@@ -215,13 +248,14 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       let newItems = this.props.checklistDoc?.items ?? [];
       newItems[index] = item;
       let items = this.filterSourceItems(newItems, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities);
-      const groups = this.setGroups(items, this.props.checklistDoc?.categories);
+      const result = this.setGroups(items, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities, this.props.checklistDoc?.status, this.props.groupingField?.key.toString(), this.state.columns);
       const notAnswered = this.props.checklistDoc?.status[0];
       const currentProgress = items.filter(i => i.status !== notAnswered).length / items.length;
       this.setState({
-        allItems: { ...newItems },
-        items: items,
-        groups: groups
+        allItems: { ...result.items },
+        items: result.items,
+        groups: result.groups,
+        columns: result.columns
       });
       this.questionAnswered(currentProgress);
     } else {
@@ -264,8 +298,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     this._selection.toggleIndexSelected(this._selection.getSelectedIndices()[0]);
   }
 
-
-
   public render() {
     const { columns, items, selectionDetails, announcedMessage, currentItem, groups } = this.state;
 
@@ -301,7 +333,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             </div>
             <div className={classNames.selectionDetails}>{selectionDetails}</div>
             <Announced message={selectionDetails} />
-            <Label>{`Total: ${this.state.allItems.length} Filtered: ${items.length} `}</Label>
+            <Label>{`Total: ${this.props.checklistDoc?.items.length} Filtered: ${items.length} `}</Label>
             {announcedMessage ? <Announced message={announcedMessage} /> : undefined}
 
             <MarqueeSelection selection={this._selection} >
@@ -370,32 +402,82 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
 
 
-  private _onColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn): void => {
+  private _onColumnClick = (ev: React.MouseEvent<HTMLElement> | undefined, column: IColumn): void => {
+    let _groupingField = this.props.groupingField ? this.props.groupingField.key.toString() : 'category'
     const { columns, items } = this.state;
-    const newColumns: IColumn[] = columns.slice();
-    const currColumn: IColumn = newColumns.filter(currCol => column.key === currCol.key)[0];
-    newColumns.forEach((newCol: IColumn) => {
-      if (newCol === currColumn) {
-        currColumn.isSortedDescending = !currColumn.isSortedDescending;
-        currColumn.isSorted = true;
-        this.setState({
-          announcedMessage: `${currColumn.name} is sorted ${currColumn.isSortedDescending ? 'descending' : 'ascending'
-            }`,
-        });
-      } else {
-        newCol.isSorted = false;
-        newCol.isSortedDescending = true;
-      }
-    });
-    const newItems = _copyAndSort(items, currColumn.fieldName!, currColumn.isSortedDescending);
+
+    const newColumns = setHeader(columns, column.key)
+    const newItems = _copyAndSort(items, _groupingField, column.fieldName!, !column.isSortedDescending);
+    let groups = this.prepareGroups(newItems, this.props.checklistDoc?.categories, this.props.checklistDoc?.severities, this.props.checklistDoc?.status, _groupingField)
+
     this.setState({
       columns: newColumns,
       items: newItems,
+      groups: groups
     });
   };
 }
 
-function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
-  const key = columnKey as keyof T;
-  return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
+function setHeader(columns: IColumn[], column: string){
+  
+  const newColumns: IColumn[] = columns.slice();
+  const currColumn: IColumn = newColumns.filter(currCol => column === currCol.key)[0];
+  newColumns.forEach((newCol: IColumn) => {
+    if (newCol === currColumn) {
+      currColumn.isSortedDescending = !currColumn.isSortedDescending;
+      currColumn.isSorted = true;
+    } else {
+      newCol.isSorted = false;
+      newCol.isSortedDescending = true;
+    }
+  });
+
+  return newColumns;
+}
+
+function _copyAndSort<T>(items: T[], groupKey:string, columnKey: string, isSortedDescending?: boolean): T[] {
+
+  if (groupKey === columnKey && groupKey != 'status'){
+    const key = groupKey as keyof T;
+    return items.slice(0).sort((a: T, b: T) => ((a[key] > b[key]) ? 1 : -1));
+  }
+  else if (groupKey === columnKey && groupKey == 'status'){
+    const key = groupKey as keyof T;
+    return items.slice(0).sort((a: T, b: T) => (((a[key] as unknown as IStatus).name > (b[key] as unknown as IStatus).name) ? 1 : -1));
+  }
+  else if (columnKey == 'status'){
+    const group = groupKey as keyof T;
+    const key = columnKey as keyof T;
+    return items.slice(0).sort((a: T, b: T) => {
+      if (a[group] < b[group]) return -1;
+      if (a[group] > b[group]) return 1;
+      if ((a[key] as unknown as IStatus).name < (b[key] as unknown as IStatus).name) return isSortedDescending? 1 : -1;
+      if ((a[key] as unknown as IStatus).name > (b[key] as unknown as IStatus).name) return isSortedDescending? -1 : 1;
+      return 0;
+    });
+  }
+  else if (groupKey == 'status'){
+    const group = groupKey as keyof T;
+    const key = columnKey as keyof T;
+    return items.slice(0).sort((a: T, b: T) => {
+      if ((a[group] as unknown as IStatus).name < (b[group] as unknown as IStatus).name) return -1;
+      if ((a[group] as unknown as IStatus).name > (b[group] as unknown as IStatus).name) return 1;
+      if (a[key] < b[key]) return isSortedDescending? 1 : -1;
+      if (a[key] > b[key]) return isSortedDescending? -1 : 1;
+      return 0;
+    });
+  }
+  else
+  {
+    const group = groupKey as keyof T;
+    const key = columnKey as keyof T;
+    return items.slice(0).sort((a: T, b: T) => {
+      if (a[group] < b[group]) return -1;
+      if (a[group] > b[group]) return 1;
+      if (a[key] < b[key]) return isSortedDescending? 1 : -1;
+      if (a[key] > b[key]) return isSortedDescending? -1 : 1;
+      return 0;
+    });
+  }
+
 }

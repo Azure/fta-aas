@@ -171,7 +171,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     const groups : IGroup[] = [];
     visibleCategories?.forEach(item => 
       {
-        let _count = items.filter(i=> i.category == item.name).length;
+        let _count = items.filter(i=> i.category === item.name).length;
         let _startIndex = items.map(function(e) { return e.category; }).indexOf(item.name);
         groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
       });

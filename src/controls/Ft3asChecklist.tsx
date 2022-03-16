@@ -301,7 +301,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
             </div>
             <div className={classNames.selectionDetails}>{selectionDetails}</div>
             <Announced message={selectionDetails} />
-            <Label>{`Total: ${this.state.allItems.length} Filtered: ${items.length} `}</Label>
+            <Label>{`Total: ${this.props.checklistDoc?.items.length} Filtered: ${items.length} `}</Label>
             {announcedMessage ? <Announced message={announcedMessage} /> : undefined}
 
             <MarqueeSelection selection={this._selection} >

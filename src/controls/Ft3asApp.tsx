@@ -1,4 +1,4 @@
-import { FocusZone, IStackStyles, IStackTokens, Pivot, PivotItem, Stack, Text, } from "@fluentui/react";
+import { FocusZone, IStackStyles, IStackTokens, Pivot, PivotItem, Stack, Text, IDropdownOption } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
 import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
@@ -42,6 +42,7 @@ export default function Ft3asApp() {
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
     const [visibleStatuses, setVisibleStatuses] = useState<IStatus[]>();
     const [filterText, setFilterText] = useState('');
+    const [groupingField, setGroupingField] = React.useState<IDropdownOption>();
     const appInsightKey = process.env.REACT_APP_APP_INSIGHTS_KEY
 
     let appInsights = null;
@@ -296,6 +297,7 @@ export default function Ft3asApp() {
                                     visibleSeverities={visibleSeverities}
                                     visibleStatuses={visibleStatuses}
                                     filterText={filterText}
+                                    groupingField={groupingField}
                                 >
                                 </Ft3asChecklist>
                             </PivotItem>
@@ -312,6 +314,7 @@ export default function Ft3asApp() {
                         severitiesChanged={setVisibleSeverities}
                         statusesChanged={setVisibleStatuses}
                         filterTextChanged={setFilterText}
+                        groupChange={setGroupingField}
                         onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
 
                     <Ft3AsTemplateSelector

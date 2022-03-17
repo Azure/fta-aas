@@ -5,7 +5,7 @@ import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
-import { Label, Separator, Stack, Dropdown, IDropdownOption, IDropdownStyles } from '@fluentui/react';
+import { Label, Separator, Stack, IDropdownOption } from '@fluentui/react';
 import { ISeverity } from '../model/ISeverity';
 
 import { IStatus } from '../model/IStatus';
@@ -179,20 +179,20 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   private prepareGroups(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[],  groupingField?: string){
     const groups : IGroup[] = [];
 
-    if (groupingField == 'severity')
+    if (groupingField === 'severity')
     {
       visibleSeverities?.forEach(item => 
         {
-          let _count = items.filter(i=> i.severity.toString() == item.name).length;
+          let _count = items.filter(i=> i.severity.toString() === item.name).length;
           let _startIndex = items.map(function(e) { return e.severity.toString(); }).indexOf(item.name);
           groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
         });
     }
-    else if (groupingField == 'status')
+    else if (groupingField === 'status')
     {
       visibleStatuses?.forEach(item => 
         {
-          let _count = items.filter(i=> i.status?.name == item.name).length;
+          let _count = items.filter(i=> i.status?.name === item.name).length;
           let _startIndex = items.map(function(e) { return e.status?.name; }).indexOf(item.name);
           groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
         });
@@ -201,7 +201,7 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     {
       visibleCategories?.forEach(item => 
         {
-          let _count = items.filter(i=> i.category == item.name).length;
+          let _count = items.filter(i=> i.category === item.name).length;
           let _startIndex = items.map(function(e) { return e.category; }).indexOf(item.name);
           groups.push({ key: item.name, name: item.name, startIndex: (_startIndex? _startIndex : 0) , count: (_count? _count : 0), level: 0});
         });
@@ -437,15 +437,15 @@ function setHeader(columns: IColumn[], column: string){
 
 function _copyAndSort<T>(items: T[], groupKey:string, columnKey: string, isSortedDescending?: boolean): T[] {
 
-  if (groupKey === columnKey && groupKey != 'status'){
+  if (groupKey === columnKey && groupKey !== 'status'){
     const key = groupKey as keyof T;
     return items.slice(0).sort((a: T, b: T) => ((a[key] > b[key]) ? 1 : -1));
   }
-  else if (groupKey === columnKey && groupKey == 'status'){
+  else if (groupKey === columnKey && groupKey === 'status'){
     const key = groupKey as keyof T;
     return items.slice(0).sort((a: T, b: T) => (((a[key] as unknown as IStatus).name > (b[key] as unknown as IStatus).name) ? 1 : -1));
   }
-  else if (columnKey == 'status'){
+  else if (columnKey === 'status'){
     const group = groupKey as keyof T;
     const key = columnKey as keyof T;
     return items.slice(0).sort((a: T, b: T) => {
@@ -456,7 +456,7 @@ function _copyAndSort<T>(items: T[], groupKey:string, columnKey: string, isSorte
       return 0;
     });
   }
-  else if (groupKey == 'status'){
+  else if (groupKey === 'status'){
     const group = groupKey as keyof T;
     const key = columnKey as keyof T;
     return items.slice(0).sort((a: T, b: T) => {

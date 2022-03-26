@@ -72,10 +72,10 @@ export default function Ft3asApp() {
     const changeTemplate = async (templateUrl: string) => {
         const doc = await TemplateServiceInstance.openTemplate(templateUrl);
         updateDocument(doc);
-        
+
     }
 
-    const updateDocument=(doc: IChecklistDocument)=>{
+    const updateDocument = (doc: IChecklistDocument) => {
         setChecklistDoc({
             ...doc,
             items: doc.items.map<ICheckItemAnswered>((i: ICheckItemAnswered) => {
@@ -271,8 +271,7 @@ export default function Ft3asApp() {
     }
 
     return (
-        <BrowserRouter>
-            <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
+        <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
                     <Ft3asToolbar
                         isModified={isModified}
@@ -322,8 +321,5 @@ export default function Ft3asApp() {
                         onTemplateSelected={onTemplateSelected}
                         onClose={() => { setShowSelectTemplate(false); }} />
                 </Stack>
-            </TelemetryProvider>
-        </BrowserRouter>
-    );
-
+        </TelemetryProvider>);
 }

@@ -43,9 +43,7 @@ export default function Ft3asApp() {
     const [visibleStatuses, setVisibleStatuses] = useState<IStatus[]>();
     const [filterText, setFilterText] = useState('');
     const [groupingField, setGroupingField] = React.useState<IDropdownOption>();
-    const appInsightKey = process.env.REACT_APP_APP_INSIGHTS_KEY
-
-    let appInsights = null;
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -271,7 +269,7 @@ export default function Ft3asApp() {
     }
 
     return (
-        <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
+        
                 <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
                     <Ft3asToolbar
                         isModified={isModified}
@@ -320,6 +318,5 @@ export default function Ft3asApp() {
                         isOpen={showSelectTemplate}
                         onTemplateSelected={onTemplateSelected}
                         onClose={() => { setShowSelectTemplate(false); }} />
-                </Stack>
-        </TelemetryProvider>);
+                </Stack>);
 }

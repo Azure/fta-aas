@@ -1,5 +1,6 @@
 import { IStackTokens, Stack, Text, Link, CompoundButton } from "@fluentui/react";
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 const gapStackTokens: IStackTokens = {
     childrenGap: 10,
@@ -7,6 +8,7 @@ const gapStackTokens: IStackTokens = {
 };
 
 export default function Ft3asHome() {
+    const history = useHistory();
     return (
         <React.Fragment>
             <Stack wrap tokens={gapStackTokens}>
@@ -23,7 +25,9 @@ export default function Ft3asHome() {
                 </Stack.Item>
                 <Stack.Item>
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                        <CompoundButton primary secondaryText="Start now!" href="/checklist">
+                        <CompoundButton primary secondaryText="Start now!" onClick={()=>{
+                            history.push("/checklist");
+                        }}>
                             Azure Design Review
                         </CompoundButton>
                     </div>

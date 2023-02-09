@@ -5,7 +5,7 @@ class GHParser {
     parse(listToParse : IGHFileList) : IParseResult {
         let result : IParseResult = {checklists: []};
         for ( let element of listToParse.tree){
-            if ( element.path.match('[a-z]+_checklist.[a-z]+.json')) {       
+            if ( element.path.match('[a-z]+_checklist.[a-z]+.json')) {      
                 let name = this.findTechnology(element.path);
                 let language = this.findLanguage(element.path);
                 let existing = result.checklists.find(o => o.name === name)
@@ -27,7 +27,7 @@ class GHParser {
     }
 
     findTechnology(element : string) : string {
-        let index = element.indexOf("_");
+        let index = element.lastIndexOf("_");
         return element.slice(0, index);
     }
 }

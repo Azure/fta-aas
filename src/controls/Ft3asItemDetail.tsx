@@ -1,4 +1,5 @@
-import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn, IconButton, IIconProps } from "@fluentui/react";
+import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn, IconButton, IIconProps, Spinner } from "@fluentui/react";
+import React from "react";
 import { FormEvent, useEffect, useState } from "react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { IStatus } from "../model/IStatus";
@@ -19,6 +20,7 @@ interface Ft3asItemDetailProps {
 
 export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
 
+    const [showSavingIcon, setShowSavingIcon] = React.useState<boolean | undefined>(false);
     const [comments, setComments] = useState(props.item.comments);
     const [itemStatus, setItemStatus] = useState(props.item.status);
 
@@ -47,6 +49,10 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
         if (option) {
             const index = props.allowedStatus.findIndex(s => s.name === option.key);
             if (index !== -1) {
+                setShowSavingIcon(true);
+                setTimeout(() => {
+                    setShowSavingIcon(false);
+                }, 500);
                 const status = props.allowedStatus[index];
                 setItemStatus(status);
                 if (props.onItemChanged) {
@@ -59,6 +65,10 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
     };
 
     const onFocusOut = () => {
+        setShowSavingIcon(true);
+        setTimeout(() => {
+            setShowSavingIcon(false);
+        }, 500);
         if (props.onItemChanged) {
             props.onItemChanged({ ...props.item, comments: comments, status: itemStatus });
         }
@@ -195,6 +205,11 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
                                 onChange={onStatusChanged} />
                         </Stack.Item>
                     </Stack>
+                    {showSavingIcon && <Stack>
+                        <div>
+                            <Spinner label="Saving..." ariaLive="assertive" labelPosition="right" />
+                        </div>
+                    </Stack>}
                     <Stack>
                         {props.item.graphQResult ? (
                             <DetailsList

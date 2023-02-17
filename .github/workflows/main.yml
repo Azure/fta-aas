@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_NAME: ft3as
   RESOURCE_GROUP: ftaaas-rg
   STORAGE_ACCOUNT_NAME: ftaaas-rg
 
@@ -53,7 +52,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name $STORAGE_ACCOUNT_NAME --auth-mode key -d '$web' -s ./deploy_dist/$PROJECT_NAME --overwrite
+            az storage blob upload-batch --account-name $STORAGE_ACCOUNT_NAME --auth-mode key -d '$web' -s ./deploy_dist --overwrite
       - name: logout
         run: |
           az logout

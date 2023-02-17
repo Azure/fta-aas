@@ -30,8 +30,8 @@ export default function Ft3asNavApp() {
     let appInsights = null;
 
     return (
-        
-            <BrowserRouter>
+
+        <BrowserRouter>
             <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
                 <Stack horizontal>
                     <Stack.Item>
@@ -44,11 +44,11 @@ export default function Ft3asNavApp() {
                     </Stack.Item>
                     <Stack.Item>
                         <Switch>
-                            <Route path="/checklist" component={Ft3asApp} />
-                            <Route path="/" component={Ft3asHome} />
+                            <Route exact path="/checklist" component={Ft3asApp} />
+                            <Route exact path="/" component={Ft3asHome} />
                         </Switch>
                     </Stack.Item>
                 </Stack>
-                </TelemetryProvider>
-            </BrowserRouter >);
+            </TelemetryProvider>
+        </BrowserRouter >);
 }

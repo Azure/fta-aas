@@ -7,7 +7,7 @@ on:
 
 env:
   RESOURCE_GROUP: ftaaas-rg
-  STORAGE_ACCOUNT_NAME: ftaaas-rg
+  STORAGE_ACCOUNT_NAME: ftaaassa
 
 jobs:
   build:

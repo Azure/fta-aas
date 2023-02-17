@@ -24,9 +24,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build:ci": "ng build --configuration production",
+    "build:ci": "react-scripts build --configuration production",
     "test": "react-scripts test",
-    "test:ci": "ng test  --watch=false --code-coverage --browsers ChromeHeadless",
+    "test:ci": "react-scripts test  --watch=false --code-coverage --browsers ChromeHeadless",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

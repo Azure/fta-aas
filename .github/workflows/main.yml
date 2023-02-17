@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_NAME: ftaaas
+  PROJECT_NAME: ft3as
   RESOURCE_GROUP: ftaaas-rg
   STORAGE_ACCOUNT_NAME: ftaaas-rg
 

@@ -1,13 +1,13 @@
-name: Deploy React App - Staging
+name: Deploy React App - Production
 
 on:
   push:
     branches:
-      - main
+      - production
 
 env:
-  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_STAGING }}
-  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME_STAGING }}
+  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_PRODUCTION }}
+  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME_PRODUCTION }}
 
 jobs:
   build:
@@ -33,9 +33,10 @@ jobs:
           name: deploy_dist
           path: build
   deployment:
-    name: Deploy to Staging
+    name: Deploy to Production
     runs-on: ubuntu-latest
-    environment: staging
+    needs: build
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v1

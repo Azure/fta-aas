@@ -1,0 +1,35 @@
+name: Deploy React App - Production
+
+on:
+  push:
+    branches:
+      - production
+
+env:
+  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_PRODUCTION }}
+  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME_PRODUCTION }}
+
+jobs:
+  deployment:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: azure/login@v1
+        with:
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
+      - name: Download build
+        uses: actions/download-artifact@v1
+        with:
+          name: deploy_dist
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name $STORAGE_ACCOUNT_NAME --auth-mode key -d '$web' -s ./deploy_dist --overwrite
+      - name: logout
+        run: |
+          az logout
+        if: always()

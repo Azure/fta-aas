@@ -4,8 +4,13 @@ on:
   pull_request:
     branches:
       - 'main'
-  workflow_dispatch:
-
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - '.vscode/**'
+      - 'infra/**'
+      - '**.md'
+      
 jobs:
   build:
     name: Build and test

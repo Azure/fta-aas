@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - '.vscode/**'
+      - 'infra/**'
+      - '**.md'
 
 env:
   RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_STAGING }}

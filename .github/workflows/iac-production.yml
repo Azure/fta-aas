@@ -1,0 +1,39 @@
+name: Provision Infrastructure - Production
+
+on:
+  push:
+    branches:
+      - production
+    paths:
+      - '**.bicep'
+
+env:
+  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_PRODUCTION }}
+  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME_PRODUCTION }}
+  APP_INSIGHTS_ACCOUNT_NAME: ${{ vars.APP_INSIGHTS_ACCOUNT_NAME_PRODUCTION }}
+
+jobs:
+  provisioning:
+    name: Provision infrastructure to Production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: azure/login@v1
+        with:
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
+      - name: Create resource group
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az group create --name $RESOURCE_GROUP --location $LOCATION
+      - name: Provision Infrastructure
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP
+      - name: logout
+        run: |
+          az logout
+        if: always()

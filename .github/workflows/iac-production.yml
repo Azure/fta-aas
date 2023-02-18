@@ -22,12 +22,7 @@ jobs:
         uses: actions/checkout@v1
       - uses: azure/login@v1
         with:
-          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
-      - name: Create resource group
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az group create --name $RESOURCE_GROUP --location $LOCATION
+          creds:  ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }} 
       - name: Provision Infrastructure
         uses: azure/CLI@v1
         with:

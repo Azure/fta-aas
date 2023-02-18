@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v1
       - uses: azure/login@v1
         with:
-          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
+          creds:  ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }} 
       - name: Download build
         uses: actions/download-artifact@v1
         with:

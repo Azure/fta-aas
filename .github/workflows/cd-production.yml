@@ -12,8 +12,7 @@ on:
       - '**.md'
 
 env:
-  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP_PRODUCTION }}
-  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME_PRODUCTION }}
+  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
 
 jobs:
   build:
@@ -48,7 +47,7 @@ jobs:
         uses: actions/checkout@v1
       - uses: azure/login@v1
         with:
-          creds:  ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }} 
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
       - name: Download build
         uses: actions/download-artifact@v1
         with:

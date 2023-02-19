@@ -15,7 +15,6 @@ param appInsightsName string
 param skuName string
 
 param customDomain object = {}
-
 param deploymentScriptTimestamp string = utcNow()
 param indexDocument string = 'index.html'
 param errorDocument404Path string = 'index.html'

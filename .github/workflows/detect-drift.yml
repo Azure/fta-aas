@@ -21,7 +21,6 @@ jobs:
     if: ${{ github.event.pull_request.base.ref == 'main' }}
     name: Detect Drift - Staging
     runs-on: ubuntu-latest
-    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -41,7 +40,6 @@ jobs:
     if: ${{ github.event.pull_request.base.ref == 'production' }}
     name: Detect Drift - Production
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v1

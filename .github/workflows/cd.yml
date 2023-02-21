@@ -1,4 +1,4 @@
-name: Deploy React App - Staging
+name: Deploy React App
 
 on:
   push:

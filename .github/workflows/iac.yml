@@ -1,4 +1,4 @@
-name: Provision Infrastructure - Staging
+name: Provision Infrastructure
 
 on:
   push:

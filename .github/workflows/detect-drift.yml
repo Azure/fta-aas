@@ -9,29 +9,27 @@ on:
   workflow_dispatch:
 
 env:
-  RESOURCE_GROUP_STAGING: ${{ vars.RESOURCE_GROUP_STAGING }}
-  STORAGE_ACCOUNT_NAME_STAGING: ${{ vars.STORAGE_ACCOUNT_NAME_STAGING }}
-  APP_INSIGHTS_ACCOUNT_NAME_STAGING: ${{ vars.APP_INSIGHTS_ACCOUNT_NAME_STAGING }}
-  RESOURCE_GROUP_PRODUCTION: ${{ vars.RESOURCE_GROUP_PRODUCTION }}
-  STORAGE_ACCOUNT_NAME_PRODUCTION: ${{ vars.STORAGE_ACCOUNT_NAME_PRODUCTION }}
-  APP_INSIGHTS_ACCOUNT_NAME_PRODUCTION: ${{ vars.APP_INSIGHTS_ACCOUNT_NAME_PRODUCTION }}
+  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+  STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+  APP_INSIGHTS_ACCOUNT_NAME: ${{ vars.APP_INSIGHTS_ACCOUNT_NAME }}
 
 jobs:
   detect-drift-staging:
     if: ${{ github.event.pull_request.base.ref == 'main' }}
     name: Detect Drift - Staging
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - uses: azure/login@v1
         with:
-          creds:  ${{ secrets.AZURE_CREDENTIALS_STAGING }} 
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
       - name: Detect Drift
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME_STAGING appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME_STAGING skuName=Standard_LRS -g $RESOURCE_GROUP_STAGING --what-if
+            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
       - name: logout
         run: |
           az logout
@@ -40,17 +38,18 @@ jobs:
     if: ${{ github.event.pull_request.base.ref == 'production' }}
     name: Detect Drift - Production
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - uses: azure/login@v1
         with:
-          creds:  ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }} 
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
       - name: Detect Drift
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME_PRODUCTION appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME_PRODUCTION skuName=Standard_LRS -g $RESOURCE_GROUP_PRODUCTION --what-if
+            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
       - name: logout
         run: |
           az logout

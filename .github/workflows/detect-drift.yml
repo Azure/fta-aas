@@ -15,7 +15,6 @@ env:
 
 jobs:
   detect-drift-staging:
-    if: ${{ github.event.pull_request.base.ref == 'main' }}
     name: Detect Drift - Staging
     runs-on: ubuntu-latest
     environment: staging
@@ -35,9 +34,9 @@ jobs:
           az logout
         if: always()
   detect-drift-production:
-    if: ${{ github.event.pull_request.base.ref == 'production' }}
     name: Detect Drift - Production
     runs-on: ubuntu-latest
+    needs: detect-drift-staging
     environment: production
     steps:
       - name: Checkout

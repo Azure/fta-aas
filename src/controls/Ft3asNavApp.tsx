@@ -30,13 +30,12 @@ export default function Ft3asNavApp() {
     let appInsights = null;
 
     return (
-        
-            <BrowserRouter>
+
+        <BrowserRouter>
             <TelemetryProvider instrumentationKey={appInsightKey} after={() => { appInsights = getAppInsights() }}>
                 <Stack horizontal>
                     <Stack.Item>
                         <Nav
-                            // onLinkClick={_onLinkClick}
                             selectedKey="key3"
                             ariaLabel="FTA as a Service"
                             groups={navLinkGroups}
@@ -49,6 +48,6 @@ export default function Ft3asNavApp() {
                         </Switch>
                     </Stack.Item>
                 </Stack>
-                </TelemetryProvider>
-            </BrowserRouter >);
+            </TelemetryProvider>
+        </BrowserRouter >);
 }

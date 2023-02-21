@@ -24,7 +24,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:ci": "CI=false && react-scripts build --configuration production",
     "test": "react-scripts test",
+    "test:ci": "CI=false && react-scripts test --watch=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

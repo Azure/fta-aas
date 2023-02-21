@@ -36,7 +36,6 @@ export default function Ft3asNavApp() {
                 <Stack horizontal>
                     <Stack.Item>
                         <Nav
-                            // onLinkClick={_onLinkClick}
                             selectedKey="key3"
                             ariaLabel="FTA as a Service"
                             groups={navLinkGroups}
@@ -44,8 +43,8 @@ export default function Ft3asNavApp() {
                     </Stack.Item>
                     <Stack.Item>
                         <Switch>
-                            <Route exact path="/checklist" component={Ft3asApp} />
-                            <Route exact path="/" component={Ft3asHome} />
+                            <Route path="/checklist" component={Ft3asApp} />
+                            <Route path="/" component={Ft3asHome} />
                         </Switch>
                     </Stack.Item>
                 </Stack>

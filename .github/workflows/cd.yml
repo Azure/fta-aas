@@ -1,9 +1,9 @@
-name: Deploy React App - Production
+name: Deploy React App - Staging
 
 on:
   push:
     branches:
-      - production
+      - main
     paths-ignore:
       - '.devcontainer/**'
       - '.github/**'
@@ -37,10 +37,34 @@ jobs:
         with:
           name: deploy_dist
           path: build
-  deployment:
-    name: Deploy to Production
+  deployment-staging:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: build
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: azure/login@v1
+        with:
+          creds:  ${{ secrets.AZURE_CREDENTIALS }} 
+      - name: Download build
+        uses: actions/download-artifact@v1
+        with:
+          name: deploy_dist
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name $STORAGE_ACCOUNT_NAME --auth-mode key -d '$web' -s ./deploy_dist --overwrite
+      - name: logout
+        run: |
+          az logout
+        if: always()
+  deployment-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deployment-staging
     environment: production
     steps:
       - name: Checkout

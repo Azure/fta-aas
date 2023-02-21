@@ -10,6 +10,7 @@ on:
       - '.vscode/**'
       - 'infra/**'
       - '**.md'
+  workflow_dispatch:
       
 jobs:
   build:

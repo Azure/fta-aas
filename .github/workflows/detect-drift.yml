@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - '**.bicep'
-  workflow_dispatch:
 
 env:
   RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}

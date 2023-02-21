@@ -10,7 +10,6 @@ on:
       - '.vscode/**'
       - 'infra/**'
       - '**.md'
-  workflow_dispatch:
 
 env:
   STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}

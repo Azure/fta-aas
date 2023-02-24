@@ -20,7 +20,7 @@ jobs:
   detect-drift-staging:
     name: Detect Drift - Staging
     runs-on: ubuntu-latest
-    environment: staging
+    environment: staging-pr
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -42,7 +42,7 @@ jobs:
     name: Detect Drift - Production
     runs-on: ubuntu-latest
     needs: detect-drift-staging
-    environment: production
+    environment: production-pr
     steps:
       - name: Checkout
         uses: actions/checkout@v1

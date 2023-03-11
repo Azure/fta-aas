@@ -65,12 +65,14 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
     };
 
     const onFocusOut = () => {
-        setShowSavingIcon(true);
-        setTimeout(() => {
-            setShowSavingIcon(false);
-        }, 500);
-        if (props.onItemChanged) {
-            props.onItemChanged({ ...props.item, comments: comments, status: itemStatus });
+        if (comments && comments !== props.item.comments) {
+            setShowSavingIcon(true);
+            setTimeout(() => {
+                setShowSavingIcon(false);
+            }, 500);
+            if (props.onItemChanged) {
+                props.onItemChanged({ ...props.item, comments: comments, status: itemStatus });
+            }
         }
     };
 

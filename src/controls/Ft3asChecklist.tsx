@@ -33,6 +33,8 @@ const stackStyles: Partial<IStackStyles> = {
     position: 'sticky',
     top: '10px',
     zIndex: 1,
+    padding: '10px',
+    border: 'solid 1px lightskyblue'
   },
 };
 
@@ -299,18 +301,17 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
     return (
       <Stack>
-        <Stack styles={stackStyles}>
-          {currentItem ? (
+        {currentItem ? (
+          <Stack styles={stackStyles}>
             <Ft3asItemDetail
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
               onItemChanged={this.onItemChanged.bind(this)}
               onNext={this.onNext.bind(this)}
               onPrevious={this.onPrevious.bind(this)}
-              onDiscard={this.onDiscardEdition.bind(this)} />
-
-          ) : <></>}        
-        </Stack>
+              onDiscard={this.onDiscardEdition.bind(this)} />    
+          </Stack>
+          ) : <></>}
         <Stack>
           <Separator>Full list</Separator>
           <div>

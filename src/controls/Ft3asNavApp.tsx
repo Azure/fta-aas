@@ -41,7 +41,7 @@ export default function Ft3asNavApp() {
                             groups={navLinkGroups}
                         />
                     </Stack.Item>
-                    <Stack.Item>
+                    <Stack.Item grow>
                         <Switch>
                             <Route path="/checklist" component={Ft3asApp} />
                             <Route path="/" component={Ft3asHome} />

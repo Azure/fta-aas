@@ -32,7 +32,7 @@ export default function Ft3asApp() {
     const [isModified, setIsModified] = useState(false);
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
-    const [showFilters, setShowFilters] = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
     const [percentComplete, setPercentComplete] = useState(0);
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
@@ -259,14 +259,13 @@ export default function Ft3asApp() {
         }
     }
 
-
     const definePercentComplete = (percentComplete: number) => {
         setPercentComplete(percentComplete);
         setIsModified(true);
     }
 
     return (
-        <Stack verticalFill styles={stackStyles} tokens={stackTokens}>
+        <Stack styles={stackStyles} tokens={stackTokens}>
             <Ft3asToolbar
                 isModified={isModified}
                 onFilter={e => { setShowFilters(true) }}

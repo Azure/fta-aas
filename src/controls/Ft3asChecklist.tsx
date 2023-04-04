@@ -7,9 +7,7 @@ import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
 import { Label, Separator, Stack, IDropdownOption, IStackStyles } from '@fluentui/react';
 import { ISeverity } from '../model/ISeverity';
-
 import { IStatus } from '../model/IStatus';
-
 import Ft3asItemDetail from './Ft3asItemDetail';
 
 const classNames = mergeStyleSets({
@@ -46,7 +44,6 @@ export interface Ft3asChecklistState {
   announcedMessage?: string;
   currentItem?: ICheckItemAnswered;
   groups: IGroup[];
-  //groupingField: IDropdownOption;
 }
 
 interface Ft3asChecklistProps {
@@ -62,24 +59,10 @@ interface Ft3asChecklistProps {
 export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asChecklistState> {
   private _selection: Selection;
 
-  // private _allItems: ICheckItemAnswered[];
   constructor(props: Ft3asChecklistProps) {
     super(props);
 
     const columns: IColumn[] = [
-      {
-        key: 'category',
-        name: 'Category',
-        ariaLabel: 'Category',
-        fieldName: 'category',
-        minWidth: 110,
-        maxWidth: 250,
-        isRowHeader: true,
-        isResizable: true,
-        isSorted: true,
-        data: 'string',
-        onColumnClick: this._onColumnClick,
-      },
       {
         key: 'subcategory',
         name: 'Subcategory',
@@ -136,21 +119,8 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
         isCollapsible: true,
         data: 'string',
         onColumnClick: this._onColumnClick,
-      },
-      {
-        key: 'link',
-        name: 'Link',
-        fieldName: 'link',
-        minWidth: 210,
-        maxWidth: 360,
-        isResizable: true,
-        isCollapsible: true,
-        data: 'url',
-        onColumnClick: this._onColumnClick,
-      },
-
+      }
     ];
-
 
     this._selection = new Selection({
       onSelectionChanged: () => {
@@ -173,9 +143,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
       announcedMessage: "announce message",
       groups: result.groups,
     };
-
-    // this.setState(this.state);
-
   }
 
   private setGroups(initialItems: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[],  groupingField?: string, columns?: IColumn[])
@@ -238,11 +205,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
   }
 
   private filterSourceItems(items: ICheckItemAnswered[], visibleCategories?: ICategory[], visibleSeverities?: ISeverity[], visibleStatuses?: IStatus[], filterText?: string): ICheckItemAnswered[] {
-
-    if (!visibleSeverities) {
-      console.log('no severities??');
-    }
-
     const _filterText= filterText?.toLowerCase();
     
     return items.filter(item =>
@@ -338,12 +300,10 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
                 isHeaderVisible={true}
                 selection={this._selection}
                 selectionPreservedOnEmptyClick={true}
-                onItemInvoked={this._onItemInvoked}
                 enterModalSelectionOnTouch={true}
                 ariaLabelForSelectionColumn="Toggle selection"
                 ariaLabelForSelectAllCheckbox="Toggle selection for all items"
                 checkButtonAriaLabel="select row"
-                onActiveItemChanged={(item) => console.log('active item changed ' + item)}
               />
             </MarqueeSelection>
 
@@ -353,25 +313,8 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     );
   }
 
-  // public componentDidUpdate(previousProps: any, previousState: Ft3asChecklistState) {
-  //   console.log('checklist did update');
-  //   if (previousState != this.state) {
-
-  //     const items = this.filterSourceItems(this.props.checklistDoc?.items ?? [], this.props.visibleCategories, this.props.visibleSeverities);
-  //     this.setState({
-  //       items: items
-  //     });
-  //   }
-  // }
-
   private _getKey(item: ICheckItemAnswered, index?: number): string {
     return item.guid;
-    // console.debug('_getkey ' + item);
-    // return index?.toString() ?? '';
-  }
-
-  private _onItemInvoked(item: any): void {
-    alert(`Item invoked: `);
   }
 
   private _getSelectionDetails(): string {
@@ -386,8 +329,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
         return `${selectionCount} items selected`;
     }
   }
-
-
 
   private _onColumnClick = (ev: React.MouseEvent<HTMLElement> | undefined, column: IColumn): void => {
     let _groupingField = this.props.groupingField ? this.props.groupingField.key.toString() : 'category'
@@ -406,7 +347,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 }
 
 function setHeader(columns: IColumn[], column: string){
-  
   const newColumns: IColumn[] = columns.slice();
   const currColumn: IColumn = newColumns.filter(currCol => column === currCol.key)[0];
   newColumns.forEach((newCol: IColumn) => {
@@ -423,7 +363,6 @@ function setHeader(columns: IColumn[], column: string){
 }
 
 function _copyAndSort<T>(items: T[], groupKey:string, columnKey: string, isSortedDescending?: boolean): T[] {
-
   if (groupKey === columnKey && groupKey !== 'status'){
     const key = groupKey as keyof T;
     return items.slice(0).sort((a: T, b: T) => ((a[key] > b[key]) ? 1 : -1));
@@ -466,5 +405,4 @@ function _copyAndSort<T>(items: T[], groupKey:string, columnKey: string, isSorte
       return 0;
     });
   }
-
 }

@@ -5,7 +5,7 @@ import { MarqueeSelection } from '@fluentui/react/lib/MarqueeSelection';
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ICheckItemAnswered } from '../model/ICheckItem';
 import { ICategory, IChecklistDocument } from '../model/IChecklistDocument';
-import { Label, Separator, Stack, IDropdownOption } from '@fluentui/react';
+import { Label, Separator, Stack, IDropdownOption, IStackStyles } from '@fluentui/react';
 import { ISeverity } from '../model/ISeverity';
 
 import { IStatus } from '../model/IStatus';
@@ -26,6 +26,17 @@ const classNames = mergeStyleSets({
     marginBottom: '20px',
   },
 });
+
+const stackStyles: Partial<IStackStyles> = {
+  root: {
+    backgroundColor: 'azure',
+    position: 'sticky',
+    top: '10px',
+    zIndex: 1,
+    padding: '10px',
+    border: 'solid 1px lightskyblue'
+  },
+};
 
 export interface Ft3asChecklistState {
   columns: IColumn[];
@@ -263,19 +274,6 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
     }
   }
 
-  // Moved to onItemChanged...
-  // private getProgress():number{
-  //   const notAnswered = this.props.checklistDoc?.status[0];
-  //   if (this.state.allItems.length === 0) {
-  //     return 0;
-  //   }
-  //   else {
-  //     const currentProgress = this.state.allItems.filter(i => i.status !== notAnswered).length / this.state.allItems.length;
-  //     console.debug(`Current progress is ${currentProgress}`);
-  //     return currentProgress;
-  //   }
-  // }
-
   private onNext(currentGuid: string) {
     const currentIndex = this.state.items.findIndex(a => a.guid === currentGuid);
     console.debug(`Current index for ${currentGuid} -> (${currentIndex}/${this.state.items.length})`)
@@ -303,28 +301,17 @@ export class Ft3asChecklist extends React.Component<Ft3asChecklistProps, Ft3asCh
 
     return (
       <Stack>
-        <Stack>
-          {/* {currentItem ? (
-            <Ft3asItemEdition
-              allowedStatus={this.props.checklistDoc?.status ?? []}
-              item={currentItem}
-              onItemChanged={this.onItemChanged.bind(this)}
-              onNext={this.onNext.bind(this)}
-              onPrevious={this.onPrevious.bind(this)}
-              onDiscard={this.onDiscardEdition.bind(this)} />
-
-          ) : <></>} */}
-          {currentItem ? (
+        {currentItem ? (
+          <Stack styles={stackStyles}>
             <Ft3asItemDetail
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
               onItemChanged={this.onItemChanged.bind(this)}
               onNext={this.onNext.bind(this)}
               onPrevious={this.onPrevious.bind(this)}
-              onDiscard={this.onDiscardEdition.bind(this)} />
-
-          ) : <></>}        
-        </Stack>
+              onDiscard={this.onDiscardEdition.bind(this)} />    
+          </Stack>
+          ) : <></>}
         <Stack>
           <Separator>Full list</Separator>
           <div>

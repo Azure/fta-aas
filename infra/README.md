@@ -10,8 +10,8 @@ APP_INSIGHTS_ACCOUNT=<ftaaastest>
 RG_NAME=<ftaaastest>
 LOCATION=westeurope
 
-yarn install
-yarn build
+npm install
+npm build --configuration production
 az login --use-device-code
 az group create --name $RG_NAME --location $LOCATION
 az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT appInsightsName=$APP_INSIGHTS_ACCOUNT skuName=Standard_LRS -g $RG_NAME

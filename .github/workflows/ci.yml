@@ -1,0 +1,32 @@
+name: Build React App
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - '.vscode/**'
+      - 'infra/**'
+      - '**.md'
+      
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build:ci
+      - name: Test
+        run: npm run test:ci

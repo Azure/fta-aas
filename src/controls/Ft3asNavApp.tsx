@@ -56,7 +56,7 @@ export default function Ft3asNavApp() {
                             onRenderLink={(link) => link ? (<Link to={link.url}>{link.name}</Link>) : <></>}
                         />
                     </Stack.Item>
-                    <Stack.Item>
+                    <Stack.Item grow>
                         <Switch>
                             <Route path="/checklist" component={Ft3asApp} />
                             <Route path="/" component={Ft3asHome} />

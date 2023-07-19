@@ -194,7 +194,7 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
                             <TextField
                                 label="Comments"
                                 multiline
-                                rows={3}
+                                rows={4}
                                 value={comments}
                                 onChange={onCommentsChanged}
                                 onBlur={onFocusOut} />

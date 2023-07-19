@@ -36,11 +36,11 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
         if (props.isModified === true) {
             setChoice(true)
             setAction('upload');
-        } else
+        } else {
             if (props.onUploadReviewClick) {
                 props.onUploadReviewClick(ev);
             }
-
+        }
     };
 
     const _onSelectTemplateClick = (ev: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement> | undefined): void => {
@@ -94,18 +94,6 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
 
     const _overflowItems: ICommandBarItemProps[] = [];
 
-    const _farItems: ICommandBarItemProps[] = [
-        {
-            key: 'info',
-            text: 'Info',
-            // This needs an ariaLabel since it's icon-only
-            ariaLabel: 'Info',
-            iconOnly: true,
-            iconProps: { iconName: 'Info' },
-            onClick: () => console.log('Info'),
-        },
-    ];
-
     const _proceedClick = (ev: React.MouseEvent<HTMLElement>, action: string | undefined): void => {
         setChoice(false)
         if (action === 'upload' && props.onUploadReviewClick) {
@@ -115,7 +103,6 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
             props.onSelectTemplateClick(ev);
         }
     };
-
 
     const SevereExample = (p: INotificationProps) => (
         <MessageBar
@@ -139,7 +126,6 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
                 items={_items}
                 overflowItems={_overflowItems}
                 overflowButtonProps={overflowProps}
-                farItems={_farItems}
                 ariaLabel="Inbox actions"
                 primaryGroupAriaLabel="Email actions"
                 farItemsGroupAriaLabel="More actions"
@@ -148,5 +134,3 @@ export function Ft3asToolbar(props: Ft3asToolbarProps) {
         </FocusZone>
     );
 };
-
-

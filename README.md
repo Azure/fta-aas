@@ -4,8 +4,8 @@
 
 | Environment | Status | Website URL |
 |:--|:--|:--|
-| staging | [![Deploy React App](https://github.com/Azure/fta-aas/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Azure/fta-aas/actions/workflows/cd.yml) | [ft3asstaging.z6.web.core.windows.net](https://ft3asstaging.z6.web.core.windows.net/) |
-| production | [![Deploy React App](https://github.com/Azure/fta-aas/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Azure/fta-aas/actions/workflows/cd.yml) | [ftaaasdev.z6.web.core.windows.net](https://ftaaasdev.z6.web.core.windows.net/) |
+| staging | [![Deploy React App](https://github.com/Azure/fta-aas/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Azure/fta-aas/actions/workflows/cd.yml) | [stgazcheckliststg.z16.web.core.windows.net](https://stgazcheckliststg.z16.web.core.windows.net/) |
+| production | [![Deploy React App](https://github.com/Azure/fta-aas/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Azure/fta-aas/actions/workflows/cd.yml) | [stgazchecklistprd.z16.web.core.windows.net](https://stgazchecklistprd.z16.web.core.windows.net/) |
 
 ## GitHub Actions
 

@@ -36,7 +36,7 @@ export default function Ft3asHome() {
                     <Text>If you have any suggestion for any of the checklist items, please raise an issue in the </Text><Link href="http://github.com/Azure/review-checklists">Azure Review Checklist GitHub repository.</Link>
                 </Stack.Item>
                 <Stack.Item>
-                    <Text>If you would like to get assistance for your Azure project, check out </Text><Link target="_blank" href={"https://azure.microsoft.com/programs/azure-fasttrack/"} >FastTrack for Azure</Link>
+                    <Text>If you would like to get assistance for your Azure project, check out </Text><Link target="_blank" href={"https://azure.microsoft.com/programs/azure-fasttrack/"} >FastTrack for Azure</Link>.
 
                 </Stack.Item>
             </Stack>

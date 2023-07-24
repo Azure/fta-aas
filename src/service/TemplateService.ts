@@ -18,16 +18,16 @@ class TemplateService {
         return "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/" + tech + "_checklist." + language + ".json"
     }
 
-    getAvailableTemplates(): Promise<string[]> {
-        // TODO: Get list of templates from github.com
+    // getAvailableTemplates(): Promise<string[]> {
+    //     // TODO: Get list of templates from github.com
 
-        // fake result
-        return Promise.resolve(["https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json",
-            "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/avd_checklist.en.json",
-            "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/lz_checklist.en.json",
-            "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/multitenancy_checklist.en.json",
-            "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/security_checklist.en.json"]);
-    }
+    //     // fake result
+    //     return Promise.resolve(["https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json",
+    //         "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/avd_checklist.en.json",
+    //         "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/lz_checklist.en.json",
+    //         "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/multitenancy_checklist.en.json",
+    //         "https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/security_checklist.en.json"]);
+    // }
 
     getAvailableTemplateNames(): string[] {
 

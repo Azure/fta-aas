@@ -4,7 +4,7 @@ class GHDownloader {
     getAllFiles(): Promise<IGHFileList> {
         //TODO: The 'number' at the end is icky --> see if we can get this some other way
         //found this through: https://api.github.com/repos/Azure/review-checklists/git/trees/main?recursive=1
-        return fetch("https://api.github.com/repos/Azure/review-checklists/git/trees/4c75ff708221dc908139512d531bbc8c1d15c5b1")
+        return fetch("https://api.github.com/repos/Azure/review-checklists/git/trees/a068a9c66b559e668393306849bef9661d82f0fa")
             .then(response => response.json());
     }
 }

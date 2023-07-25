@@ -80,9 +80,9 @@ export class Ft3asChecklist extends React.Component<
 
     const columns: IColumn[] = [
       {
-        key: "subcategory",
-        name: "Subcategory",
-        fieldName: "subcategory",
+        key: "id",
+        name: "ID",
+        fieldName: "id",
         minWidth: 60,
         maxWidth: 150,
         isRowHeader: true,
@@ -94,9 +94,9 @@ export class Ft3asChecklist extends React.Component<
         isPadded: true,
       },
       {
-        key: "id",
-        name: "ID",
-        fieldName: "id",
+        key: "subcategory",
+        name: "Subcategory",
+        fieldName: "subcategory",
         minWidth: 60,
         maxWidth: 150,
         isRowHeader: true,

@@ -33,7 +33,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
+            az deployment group create --name azchecklist --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
       - name: logout
         run: |
           az logout
@@ -55,7 +55,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
+            az deployment group create --name azchecklist --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT_NAME appInsightsName=$APP_INSIGHTS_ACCOUNT_NAME skuName=Standard_LRS -g $RESOURCE_GROUP --what-if
       - name: logout
         run: |
           az logout

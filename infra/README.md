@@ -5,18 +5,18 @@ Guidance destined to developers looking to quickly deploy the solution in their 
 > Please replace the values in < > with unique values for your deployment.
 
 ```
-STORAGE_ACCOUNT=<ftaaastest>
-APP_INSIGHTS_ACCOUNT=<ftaaastest>
-RG_NAME=<ftaaastest>
+STORAGE_ACCOUNT=<azchecklisttest>
+APP_INSIGHTS_ACCOUNT=<azchecklisttest>
+RG_NAME=<azchecklisttest>
 LOCATION=westeurope
 
 npm install
 npm build --configuration production
 az login --use-device-code
 az group create --name $RG_NAME --location $LOCATION
-az deployment group create --name ftaaas --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT appInsightsName=$APP_INSIGHTS_ACCOUNT skuName=Standard_LRS -g $RG_NAME
+az deployment group create --name azchecklist --template-file infra/deploytostorageaccount.bicep --parameters accountName=$STORAGE_ACCOUNT appInsightsName=$APP_INSIGHTS_ACCOUNT skuName=Standard_LRS -g $RG_NAME
 az storage copy -s 'build/*' --destination-account-name $STORAGE_ACCOUNT --destination-container '$web' --recursive
-echo "Website deployed: https://$(az deployment group show -g $RG_NAME --name ftaaas --query properties.outputs.staticWebsiteHostName.value -o tsv)"
+echo "Website deployed: https://$(az deployment group show -g $RG_NAME --name azchecklist --query properties.outputs.staticWebsiteHostName.value -o tsv)"
 ```
 
 ## Bicep parameters

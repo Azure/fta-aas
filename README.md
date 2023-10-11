@@ -1,4 +1,4 @@
-# FTA as a Service (fta-aas)
+# Azure Checklist (AzChecklist)
 
 ## Application Environments
 

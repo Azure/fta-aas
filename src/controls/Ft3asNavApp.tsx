@@ -51,7 +51,7 @@ export default function Ft3asNavApp() {
                         <Nav
                             onLinkClick={_onLinkClick}
                             selectedKey="key3"
-                            ariaLabel="FTA as a Service"
+                            ariaLabel="AzChecklist"
                             groups={navLinkGroups}
                             onRenderLink={(link) => link ? (<Link to={link.url}>{link.name}</Link>) : <></>}
                         />

@@ -1,6 +1,6 @@
 {
-  "short_name": "FTA-as-a-Service App",
-  "name": "FTA-as-a-Service App",
+  "short_name": "AzChecklist App",
+  "name": "Azure Checklist App",
   "icons": [
     {
       "src": "favicon.ico",

@@ -1,9 +1,9 @@
-import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn, IconButton, IIconProps, Spinner } from "@fluentui/react";
+import { ComboBox, FocusZone, IComboBoxOption, Stack, TextField, Text, IStackTokens, Link, PrimaryButton, DefaultButton, IComboBox, DetailsList, IColumn, IconButton, IIconProps, Spinner, IDropdownOption } from "@fluentui/react";
 import React from "react";
 import { FormEvent, useEffect, useState } from "react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import { IStatus } from "../model/IStatus";
-
+import './ItemDetail.css';
 const horizontalGapStackTokens: IStackTokens = {
     childrenGap: 10,
     padding: 10,
@@ -16,6 +16,7 @@ interface Ft3asItemDetailProps {
     onDiscard?: () => void;
     onNext?: (currentGuid: string) => void;
     onPrevious?: (currentGuid: string) => void;
+    groupingField?: IDropdownOption
 }
 
 export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
@@ -151,9 +152,16 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
     const nextIcon: IIconProps = { iconName: 'Next' };
     const previousIcon: IIconProps = { iconName: 'Previous' };
     const removeIcon: IIconProps = { iconName: 'Clear' };
-
+    const handleClickOutside = () => {
+        onDiscard();
+    }
+    const handleClickInsidePanel = (e:any) => {
+        e.stopPropagation();
+    }
     return (
-        <Stack horizontal tokens={{
+        <div className="itemDetailsWrapper" onClick={handleClickOutside}>
+            <div className="itemDetails" onClick={handleClickInsidePanel}>
+                 <Stack horizontal tokens={{
             childrenGap: 20
         }}>
             <Stack.Item>
@@ -168,8 +176,10 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
                 <FocusZone>
                     <Stack>
                         <Stack.Item align="start">
-                            <Text variant={'xLarge'} block >
-                                {`Category: ${props.item.category} - ${props.item.subcategory}`}
+                            <Text variant={'large'}  >
+                                {props?.groupingField?.key!=='category' && <>{`Waf: ${props.item.waf}`}</>}
+                                {props?.groupingField?.key==='category' && <>{`Category: ${props.item.category} - ${props.item.subcategory}`}</>}
+                                
                             </Text>
                         </Stack.Item>
                         <Stack.Item align="start">
@@ -178,7 +188,7 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
                             </Text>
                         </Stack.Item>
                         <Stack.Item align="start">
-                            <Text >
+                            <Text variant={'xLarge'}>
                                 {props.item.text}
                             </Text>
                         </Stack.Item>
@@ -239,6 +249,9 @@ export default function Ft3asItemDetail(props: Ft3asItemDetailProps) {
                     onClick={onDiscard}
                 />
             </Stack.Item>
-        </Stack>);
+        </Stack>
+            </div>
+        </div>
+    )
 
 }

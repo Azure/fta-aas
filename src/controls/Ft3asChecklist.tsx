@@ -11,7 +11,7 @@ import {
 import { MarqueeSelection } from "@fluentui/react/lib/MarqueeSelection";
 import { mergeStyleSets } from "@fluentui/react/lib/Styling";
 import { ICheckItemAnswered } from "../model/ICheckItem";
-import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument, IWaf } from "../model/IChecklistDocument";
 import {
   Label,
   Separator,
@@ -60,8 +60,10 @@ export interface Ft3asChecklistState {
 }
 
 interface Ft3asChecklistProps {
+  index?: number;
   checklistDoc?: IChecklistDocument;
   questionAnswered?: (percentComplete: number) => void;
+  visibleWaf?: IWaf[];
   visibleCategories?: ICategory[];
   visibleSeverities?: ISeverity[];
   visibleStatuses?: IStatus[];
@@ -161,8 +163,10 @@ export class Ft3asChecklist extends React.Component<
       },
     });
 
+    const sortedItem = this.props.checklistDoc?.items?.sort((a,b) => (a.waf > b.waf) ? 1 : ((b.waf > a.waf) ? -1 : 0)) ?? []
     const items = this.filterSourceItems(
-      this.props.checklistDoc?.items ?? [],
+      sortedItem ?? [],
+      this.props.visibleWaf,
       this.props.visibleCategories,
       this.props.visibleSeverities,
       this.props.visibleStatuses,
@@ -170,13 +174,13 @@ export class Ft3asChecklist extends React.Component<
     );
     const result = this.setGroups(
       items,
+      this.props.visibleWaf,
       this.props.visibleCategories,
       this.props.visibleSeverities,
       this.props.visibleStatuses,
       this.props.groupingField?.key.toString(),
       columns
     );
-
     this.state = {
       allItems: result.items,
       items: result.items,
@@ -189,6 +193,7 @@ export class Ft3asChecklist extends React.Component<
 
   private setGroups(
     initialItems: ICheckItemAnswered[],
+    visibleWaf?: IWaf[],
     visibleCategories?: ICategory[],
     visibleSeverities?: ISeverity[],
     visibleStatuses?: IStatus[],
@@ -204,6 +209,7 @@ export class Ft3asChecklist extends React.Component<
     );
     let groups = this.prepareGroups(
       items,
+      visibleWaf,
       visibleCategories,
       visibleSeverities,
       visibleStatuses,
@@ -215,13 +221,13 @@ export class Ft3asChecklist extends React.Component<
 
   private prepareGroups(
     items: ICheckItemAnswered[],
+    visibleWaf?: IWaf[],
     visibleCategories?: ICategory[],
     visibleSeverities?: ISeverity[],
     visibleStatuses?: IStatus[],
     groupingField?: string
   ) {
     const groups: IGroup[] = [];
-
     if (groupingField === "severity") {
       visibleSeverities?.forEach((item) => {
         let _count = items.filter(
@@ -256,12 +262,29 @@ export class Ft3asChecklist extends React.Component<
           level: 0,
         });
       });
-    } else {
+    } else if ( groupingField === "category"){
       visibleCategories?.forEach((item) => {
         let _count = items.filter((i) => i.category === item.name).length;
         let _startIndex = items
           .map(function (e) {
             return e.category;
+          })
+          .indexOf(item.name);
+        groups.push({
+          key: item.name,
+          name: item.name,
+          startIndex: _startIndex ? _startIndex : 0,
+          count: _count ? _count : 0,
+          level: 0,
+        });
+      });
+    }
+    else{
+      visibleWaf?.forEach((item) => {
+        let _count = items.filter((i) => i.waf === item.name).length;
+        let _startIndex = items
+          .map(function (e) {
+            return e.waf;
           })
           .indexOf(item.name);
         groups.push({
@@ -280,6 +303,7 @@ export class Ft3asChecklist extends React.Component<
   public componentWillReceiveProps(props: Ft3asChecklistProps) {
     const items = this.filterSourceItems(
       props.checklistDoc?.items ?? [],
+      props.visibleWaf,
       props.visibleCategories,
       props.visibleSeverities,
       props.visibleStatuses,
@@ -287,6 +311,7 @@ export class Ft3asChecklist extends React.Component<
     );
     const result = this.setGroups(
       items,
+      props.visibleWaf,
       props.visibleCategories,
       props.visibleSeverities,
       props.visibleStatuses,
@@ -316,25 +341,28 @@ export class Ft3asChecklist extends React.Component<
 
   private filterSourceItems(
     items: ICheckItemAnswered[],
+    visibleWaf?: IWaf[],
     visibleCategories?: ICategory[],
     visibleSeverities?: ISeverity[],
     visibleStatuses?: IStatus[],
     filterText?: string
   ): ICheckItemAnswered[] {
     const _filterText = filterText?.toLowerCase();
-
-    return items.filter(
+    const filteredItemTemp =  items.filter(
       (item) =>
+      (visibleWaf === undefined ||
+        visibleWaf?.findIndex((c) => c.name === item.waf) !==
+          -1) &&
         (visibleCategories === undefined ||
-          visibleCategories.findIndex((c) => c.name === item.category) !==
+          visibleCategories?.findIndex((c) => c.name === item.category) !==
             -1) &&
         (visibleSeverities === undefined ||
-          visibleSeverities.findIndex(
+          visibleSeverities?.findIndex(
             (s) =>
               s.name.toLowerCase() === item.severity.toString().toLowerCase()
           ) !== -1) &&
         (visibleStatuses === undefined ||
-          visibleStatuses.findIndex(
+          visibleStatuses?.findIndex(
             (s) =>
               item.status &&
               s.name.toLowerCase() === item.status.name.toLowerCase()
@@ -346,22 +374,26 @@ export class Ft3asChecklist extends React.Component<
           item.text.toLowerCase().indexOf(_filterText) !== -1 ||
           item.severity.toString().toLowerCase().indexOf(_filterText) !== -1)
     );
+    return filteredItemTemp;
   }
 
   private onItemChanged(item: ICheckItemAnswered) {
+    const sortedItem = this.props.checklistDoc?.items?.sort((a,b) => (a.waf > b.waf) ? 1 : ((b.waf > a.waf) ? -1 : 0)) ?? []
     const index =
-      this.props.checklistDoc?.items.findIndex((c) => c.guid === item.guid) ??
+    sortedItem.findIndex((c) => c.guid === item.guid) ??
       -1;
     if (index !== -1) {
-      let newItems = this.props.checklistDoc?.items ?? [];
+      let newItems = sortedItem ?? [];
       newItems[index] = item;
       let items = this.filterSourceItems(
         newItems,
+        this.props.checklistDoc?.waf,
         this.props.checklistDoc?.categories,
         this.props.checklistDoc?.severities
       );
       const result = this.setGroups(
         items,
+        this.props.checklistDoc?.waf,
         this.props.checklistDoc?.categories,
         this.props.checklistDoc?.severities,
         this.props.checklistDoc?.status,
@@ -434,12 +466,13 @@ export class Ft3asChecklist extends React.Component<
       currentItem,
       groups,
     } = this.state;
-
+    console.log(this.props)
     return (
       <Stack>
         {currentItem ? (
           <Stack styles={stackStyles}>
             <Ft3asItemDetail
+              groupingField={this.props.groupingField}
               allowedStatus={this.props.checklistDoc?.status ?? []}
               item={currentItem}
               onItemChanged={this.onItemChanged.bind(this)}
@@ -467,7 +500,6 @@ export class Ft3asChecklist extends React.Component<
             {announcedMessage ? (
               <Announced message={announcedMessage} />
             ) : undefined}
-
             <MarqueeSelection selection={this._selection}>
               <DetailsList
                 items={items}
@@ -523,7 +555,6 @@ export class Ft3asChecklist extends React.Component<
       ? this.props.groupingField.key.toString()
       : "category";
     const { columns, items } = this.state;
-
     const newColumns = setHeader(columns, column.key);
     const newItems = _copyAndSort(
       items,
@@ -533,6 +564,7 @@ export class Ft3asChecklist extends React.Component<
     );
     let newGroups = this.prepareGroups(
       newItems,
+      this.props.checklistDoc?.waf,
       this.props.checklistDoc?.categories,
       this.props.checklistDoc?.severities,
       this.props.checklistDoc?.status,

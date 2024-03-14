@@ -6,13 +6,14 @@ import GraphServiceInstance from '../service/GraphService';
 
 const guid1 = "abc123";
 const guid2 = "def456";
-const item1: ICheckItemAnswered = {id: "", guid: guid1, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
-const item2: ICheckItemAnswered = {id: "", guid: guid2, category: "", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
+const item1: ICheckItemAnswered = {id: "", guid: guid1, category: "", waf:"", subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
+const item2: ICheckItemAnswered = {id: "", guid: guid2, category: "", waf:"",subcategory: "", ha: 1, text: "", severity: { description: "", name: "" } };
 const baseCheckListDoc: IChecklistDocument = {
     items: [
         item1,
         item2
     ],
+    waf:[],
     categories: [],
     metadata: {},
     severities: [],

@@ -5,6 +5,7 @@ import TemplateServiceInstance from "../service/TemplateService";
 const buttonStyles = { root: { marginRight: 8 } };
 
 interface Ft3AsTemplateSelectorProps {
+    onMultiTemplateSelected(listOfUrl: any): unknown;
     isOpen: boolean;
     onTemplateSelected: (templateUrl?: string) => void;
     onClose: () => void;
@@ -32,18 +33,21 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
             })
     }, []);
 
-    const [selectedTechItem, setSelectedTechItem] = useState<IDropdownOption>();
     const [selectedLanguageItem, setSelectedLanguageItem] = useState<IDropdownOption>();
+    const [selectedKeys, setSelectedKeys] = useState<IDropdownOption[]>([]);
+
 
     const onOk = () => {
-        if (selectedLanguageItem && selectedTechItem){
-            console.log(selectedTechItem.text);
-            console.log(selectedLanguageItem.text);
-            const url : string = TemplateServiceInstance.getPathforTechAndLanguage(selectedTechItem.text, selectedLanguageItem.text);
-            console.log('URL: ' + url);
-            props.onTemplateSelected(url);
+        if (selectedLanguageItem && selectedKeys?.length) {
+            let listOfUrl: any = [];
+            selectedKeys.forEach((val) => {
+                const url: string = TemplateServiceInstance.getPathforTechAndLanguage(val?.text, selectedLanguageItem?.text);
+                listOfUrl.push(url);
+            })
+            props.onMultiTemplateSelected(listOfUrl);
+
         }
-        // props.onClose();
+        props.onClose();
     }
 
     const onRenderFooterContent = useCallback(
@@ -56,20 +60,37 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
             </div>
         ), [onOk, props.onClose]);
 
-    const onChangeOfTechnology = (event: FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
-        setSelectedTechItem(item);
+    const onChangeOfTechMultiSelect = (event: React.FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
         if (item) {
-            console.log(item.text);
-            const languages = TemplateServiceInstance.getAvailableLanguagesforTemplate(item.text);
-            console.log(languages);
-            setAvailableLanguages(languages.map<IDropdownOption>(t => {
-                return {
-                    key: t, text: t
-                };
-            }));
-        }
-    }
+            let tempTechList = [];
+            if(item.selected){
+                tempTechList=[...selectedKeys, item]
+            }
+            else {
+                tempTechList= selectedKeys.filter(val => val?.key !== item.key)
+            }
+            const arrayOfTech = tempTechList.map(function (el) { return el.text; });
+            const listOfLang = TemplateServiceInstance.getAvailableLanguagesforSelectedTemplate(arrayOfTech)
+            const updatedFilteredLanguage = listOfLang?.map<IDropdownOption>(t => {
+                    return {
+                        key: t, text: t
+                    };
+                });
+            setSelectedKeys(
+                tempTechList
+            );
+            setAvailableLanguages(updatedFilteredLanguage);
 
+            if(tempTechList?.length){
+                const enItem = updatedFilteredLanguage?.find((val)=>val.key==="en");
+                setSelectedLanguageItem(Object.keys(enItem||{})?.length>0? enItem : updatedFilteredLanguage[0])
+            }
+            else {
+                setSelectedLanguageItem(undefined)
+                setAvailableLanguages([])
+            }
+        }
+    };
     const onChangeOfLanguage = (event: FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
         setSelectedLanguageItem(item);
     };
@@ -82,19 +103,20 @@ export default function Ft3AsTemplateSelector(props: Ft3AsTemplateSelectorProps)
         onRenderFooterContent={onRenderFooterContent}
         isFooterAtBottom={true}
     >
-        <p>Technology list</p>
+        <p>Service list</p>
         <Dropdown
-            label="Select template"
-            selectedKey={selectedTechItem ? selectedTechItem.key : undefined}
+            label="Select Service"
+            selectedKeys={selectedKeys?.map((item) => String(item?.key ?? ''))}
             options={availableTechnologies}
-            placeholder="Select a technology"
-            onChange={onChangeOfTechnology} />
+            placeholder="Select a Service"
+            multiSelect
+            onChange={onChangeOfTechMultiSelect} />
         <p>Language list</p>
         <Dropdown
             label="Select language"
             selectedKey={selectedLanguageItem ? selectedLanguageItem.key : undefined}
             options={availableLanguages}
             placeholder="Select a language"
-            onChange={onChangeOfLanguage} />        
+            onChange={onChangeOfLanguage} />
     </Panel>)
 }

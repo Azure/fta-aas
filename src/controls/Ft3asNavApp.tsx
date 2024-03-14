@@ -33,7 +33,7 @@ export default function Ft3asNavApp() {
                 },
                 {
                     name: 'Azure Design Review',
-                    url: 'checklist',
+                    url: '/checklist',
                     icon: 'CheckList',
                     key: 'key1',
 

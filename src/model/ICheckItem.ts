@@ -6,6 +6,7 @@ import { IStatus } from "./IStatus";
 export interface ICheckItem {
     id: string;
     category: string;
+    waf: string;
     subcategory: string;
     text: string;
     guid: string;

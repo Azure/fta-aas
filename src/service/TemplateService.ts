@@ -38,6 +38,7 @@ class TemplateService {
         return result;
     }
 
+
     getAvailableLanguagesforTemplate(checklistname : string): string[] {
         for (let element of this.parsed.checklists){
             if ( element.name === checklistname) {
@@ -46,7 +47,21 @@ class TemplateService {
         }
         return [];
     }
-
+    getAvailableLanguagesforSelectedTemplate(checklistname: string[]) {
+        let language: string[] = []
+        for (let element of this.parsed.checklists){
+            if (   checklistname.includes(element.name)) {
+                if(language?.length>0){
+                    const temp = language.filter(value => element.languages.includes(value));
+                    language=temp ;
+                }
+                else {
+                    language=language.concat([...element.languages]) ;
+                }
+            }
+        }
+        return language;
+    }
     async openTemplate(url: string): Promise<IChecklistDocument> {
         const response = await fetch(url);
         return (await response.json()) as IChecklistDocument;

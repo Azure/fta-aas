@@ -1,7 +1,7 @@
 import { FocusZone, IStackStyles, IStackTokens, Pivot, PivotItem, Stack, Text, IDropdownOption } from "@fluentui/react";
 import { ICheckItemAnswered } from "../model/ICheckItem";
 import React, { useEffect, useState } from "react";
-import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument, IWaf } from "../model/IChecklistDocument";
 import TemplateServiceInstance from "../service/TemplateService";
 import { Ft3asChecklist } from "./Ft3asChecklist";
 import Ft3AsTemplateSelector from "./Ft3asTemplateSelector";
@@ -17,6 +17,13 @@ import Ft3asCharts from "./Ft3asCharts";
 import { IStatus } from "../model/IStatus";
 import { useBeforeunload } from 'react-beforeunload';
 
+export interface IGroupingField {
+    [index: number]: IDropdownOption;
+}
+
+export interface IFilter {
+    [index: number]: any;
+}
 const stackTokens: IStackTokens = { childrenGap: 15 };
 const stackStyles: Partial<IStackStyles> = {
     root: {
@@ -31,10 +38,13 @@ const stackStyles: Partial<IStackStyles> = {
 export default function Ft3asApp() {
     const [isModified, setIsModified] = useState(false);
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
+    const [multiChecklistDoc, setMultiChecklistDoc] = useState<(IChecklistDocument)[]>();
+
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [percentComplete, setPercentComplete] = useState(0);
     const [visibleCategories, setVisibleCategories] = useState<ICategory[]>();
+    const [visibleWaf, setVisibleWaf] = useState<IWaf[]>();
     const [visibleSeverities, setVisibleSeverities] = useState<ISeverity[]>();
     const [visibleStatuses, setVisibleStatuses] = useState<IStatus[]>();
     const [filterText, setFilterText] = useState('');
@@ -48,7 +58,8 @@ export default function Ft3asApp() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await changeTemplate('https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json');
+            let initialDoc : any = ['https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json']
+            await changeMultiTemplate(initialDoc);
         }
         fetchData()
             .then(() => console.log('loaded'))
@@ -87,15 +98,27 @@ export default function Ft3asApp() {
             })
         });
         setVisibleCategories(doc.categories);
+        setVisibleWaf(doc.waf);
         setVisibleSeverities(doc.severities);
         setIsModified(false);
         setVisibleStatuses(doc.status);
     }
 
-    const downloadFile = () => {
-        const fileName = `${getChecklistName()}.json`;
+    const generateFileNameTimeStamp = () => {
+        const date = new Date();
+        const month = (date.getMonth()+1).toString().padStart(2, '0');
+        const currentDate = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+
+        return `${month}${currentDate}${date.getFullYear()}` + '_' + `${hours}${minutes}${seconds}`
+    }
+    const downloadFile = (index:number) => {
+        const timeStamp = generateFileNameTimeStamp();
+        const fileName = `AzureDesignReview_${timeStamp}.json`;
         const fileType = 'text/json';
-        const data = JSON.stringify(checklistDoc)
+        const data = JSON.stringify(multiChecklistDoc)
 
         // Create a blob with the data we want to download as a file
         const blob = new Blob([data], { type: fileType })
@@ -106,8 +129,8 @@ export default function Ft3asApp() {
         setIsModified(false);
     }
 
-    const downloadCsv = () => {
-        const fileName = getChecklistName();
+    const downloadCsv = (index:number) => {
+        const fileName = getChecklistName(index);
         const arr = ['category', 'subcategory', 'text', 'link', 'guid', 'severity', 'comments'];
         const replacer = (key: string, value: object) => {
             if (typeof value != 'object' && !arr.includes(key)) {
@@ -120,7 +143,7 @@ export default function Ft3asApp() {
             return value;
         }
 
-        CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(checklistDoc, replacer), fileName, true);
+        CsvGeneratorInstance.JSONToCSVConvertor(JSON.stringify(multiChecklistDoc?.[index], replacer), fileName, true);
     }
 
     const uploadFile = (ev: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement> | undefined) => {
@@ -154,7 +177,7 @@ export default function Ft3asApp() {
                         reader.onload = function (event) {
                             const contents = event?.target?.result
                             const doc = JSON.parse(contents as string) as IChecklistDocument
-                            updateDocument(doc);
+                            updateMultiDocument(doc);
                         };
 
                         (e.target as HTMLInputElement).value = ''
@@ -251,9 +274,9 @@ export default function Ft3asApp() {
         a.remove();
     }
 
-    const getChecklistName = (): string => {
-        if (checklistDoc && checklistDoc.metadata['name']) {
-            return checklistDoc.metadata['name'];
+    const getChecklistName = (index:number): string => {
+        if (multiChecklistDoc?.[index] && multiChecklistDoc?.[index]?.metadata['name']) {
+            return multiChecklistDoc?.[index].metadata['name'];
         } else {
             return 'No checklist loaded';
         }
@@ -264,52 +287,137 @@ export default function Ft3asApp() {
         setIsModified(true);
     }
 
+    const changeMultiTemplate = async (listOfUrl: []) => {
+        const promises = listOfUrl.map(url => fetch(url));
+        let data: any = [];
+        const response = await Promise.all(promises)
+        try {
+            if (response.length) {
+                await Promise.all(response.map(async (item) => {
+                    const respObject = (await item.json()) as IChecklistDocument
+                    data = data.concat(respObject);
+                }))
+                updateMultiDocument(data)
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    const updateMultiDocument = (data: any) => {
+        let categoriesArray: (ICategory)[] = [];
+        let wafArray: (IWaf)[] = [];
+        let severityArray: (ISeverity)[] = [];
+        let statusArray: (IStatus)[] = [];
+        const temp = data.map((item: IChecklistDocument) => {
+            item?.categories?.forEach((v)=>{
+                if(!categoriesArray?.some((val)=>val.name===v.name)){
+                    categoriesArray = categoriesArray.concat(v);
+
+                }
+            })
+            
+            if(wafArray?.length===0){
+                wafArray = wafArray.concat(item?.waf);
+            }
+            if(severityArray?.length===0){
+                severityArray = severityArray.concat(item?.severities);
+            }
+            if(statusArray?.length===0){
+                statusArray = statusArray.concat(item?.status);
+            }
+            return {
+                ...item,
+                items: item?.items?.map<ICheckItemAnswered>((i: ICheckItemAnswered) => {
+                    const defaultedI: ICheckItemAnswered = {
+                        ...i,
+                        status: i.status ?? item?.status?.[0]
+                    }
+                    return defaultedI;
+                })
+            }
+        })
+        setVisibleCategories(categoriesArray);
+        setVisibleWaf(wafArray);
+        setVisibleSeverities(severityArray);
+        setIsModified(false);
+        setVisibleStatuses(statusArray)
+        setMultiChecklistDoc(temp);
+    }
+    const onMultiTemplateSelected = async (listOfUrl: any) => {
+        if (listOfUrl?.length) {
+            try {
+                await changeMultiTemplate(listOfUrl);
+            }
+            catch (reason) {
+                console.log(reason);
+            }
+        }
+    }
+
     return (
-        <Stack styles={stackStyles} tokens={stackTokens}>
-            <Ft3asToolbar
-                isModified={isModified}
-                onFilter={e => { setShowFilters(true) }}
-                onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
-                onDownloadReviewClick={e => { downloadFile(); }}
-                onDownloadCsvClick={e => { downloadCsv(); }}
-                onUploadReviewClick={e => { uploadFile(e); }}
-                onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
-            />
-            <Text variant={'xxLarge'}>{getChecklistName()}</Text>
-            <FocusZone>
-                <Pivot aria-label="Checklist">
-                    <PivotItem headerText="Checklist" itemIcon="GridViewSmall">
-                        <Ft3asProgress percentComplete={percentComplete} />
-                        <Ft3asChecklist
-                            checklistDoc={checklistDoc}
-                            questionAnswered={definePercentComplete}
-                            visibleCategories={visibleCategories}
-                            visibleSeverities={visibleSeverities}
-                            visibleStatuses={visibleStatuses}
-                            filterText={filterText}
-                            groupingField={groupingField}
-                        >
-                        </Ft3asChecklist>
-                    </PivotItem>
-                    <PivotItem headerText="Dashboard" itemIcon="BIDashboard">
-                        <Ft3asCharts checklistDoc={checklistDoc} />
-                    </PivotItem>
-                </Pivot>
-            </FocusZone>
+        <>
+            
+                        <Stack styles={stackStyles} tokens={stackTokens}>
+                       
+                            <Ft3asToolbar
+                                isModified={isModified}
+                                onFilter={e => { setShowFilters(true) }}
+                                onSelectTemplateClick={e => { setShowSelectTemplate(true); }}
+                                onDownloadReviewClick={e => { downloadFile(0); }}
+                                onDownloadCsvClick={e => { downloadCsv(0); }}
+                                onUploadReviewClick={e => { uploadFile(e); }}
+                                onUploadGraphQResultClick={e => { uploadGraphQResult(e); }}
+                            />
+                             {
+                multiChecklistDoc?.map((doc,index) => (
+                    <>
+                  
+                            <Text variant={'xxLarge'}>{getChecklistName(index)}</Text>
+                            <FocusZone>
+                                <Pivot aria-label="Checklist">
+                                    <PivotItem headerText="Checklist" itemIcon="GridViewSmall">
+                                        <Ft3asProgress percentComplete={percentComplete} />
+                                        <Ft3asChecklist
+                                            index= {index}
+                                            checklistDoc={doc}
+                                            questionAnswered={definePercentComplete}
+                                            visibleWaf={visibleWaf}
+                                            visibleCategories={visibleCategories}
+                                            visibleSeverities={visibleSeverities}
+                                            visibleStatuses={visibleStatuses}
+                                            filterText={filterText}
+                                            groupingField={groupingField}
+                                        />
+                                    </PivotItem>
+                                    <PivotItem headerText="Dashboard" itemIcon="BIDashboard">
+                                        <Ft3asCharts checklistDoc={doc} />
+                                    </PivotItem>
+                                </Pivot>
+                            </FocusZone>
+                            </>
+                                ))}
+                            {multiChecklistDoc?.[0] ? (<Ft3asFilters
+                                isOpen={showFilters}
+                                checklistDoc={multiChecklistDoc?.[0]}
+                                wafChanged={setVisibleWaf}
+                                categoriesChanged={setVisibleCategories}
+                                severitiesChanged={setVisibleSeverities}
+                                statusesChanged={setVisibleStatuses}
+                                filterText={filterText}
+                                filterTextChanged={setFilterText}
+                                groupChange={setGroupingField}
+                                onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
+                                
+                                <Ft3AsTemplateSelector
+                                onMultiTemplateSelected={onMultiTemplateSelected}
+                                isOpen={showSelectTemplate}
+                                onTemplateSelected={onTemplateSelected}
+                                onClose={() => { setShowSelectTemplate(false); }} />
+                                
+                        </Stack>
+        </>
 
-            {checklistDoc ? (<Ft3asFilters
-                isOpen={showFilters}
-                checklistDoc={checklistDoc}
-                categoriesChanged={setVisibleCategories}
-                severitiesChanged={setVisibleSeverities}
-                statusesChanged={setVisibleStatuses}
-                filterTextChanged={setFilterText}
-                groupChange={setGroupingField}
-                onClose={() => setShowFilters(false)}></Ft3asFilters>) : (<></>)}
-
-            <Ft3AsTemplateSelector
-                isOpen={showSelectTemplate}
-                onTemplateSelected={onTemplateSelected}
-                onClose={() => { setShowSelectTemplate(false); }} />
-        </Stack>);
+    );
 }

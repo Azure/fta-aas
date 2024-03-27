@@ -7,7 +7,7 @@ import {
   IDropdownStyles,
 } from "@fluentui/react";
 import * as React from "react";
-import { ICategory, IChecklistDocument } from "../model/IChecklistDocument";
+import { ICategory, IChecklistDocument, IWaf } from "../model/IChecklistDocument";
 import { ISeverity } from "../model/ISeverity";
 import { IStatus } from "../model/IStatus";
 import { TextField } from "@fluentui/react/lib/TextField";
@@ -29,11 +29,14 @@ const options: IDropdownOption[] = [
   { key: "category", text: "Category" },
   { key: "status", text: "Status" },
   { key: "severity", text: "Severity" },
+  { key: "waf", text: "Waf" },
 ];
 
 interface Ft3asFiltersProps {
-  checklistDoc: IChecklistDocument;
+  checklistDoc?: IChecklistDocument;
   isOpen: boolean;
+  filterText?: string;
+  wafChanged?: (selectedCategories: ICategory[]) => void;
   categoriesChanged?: (selectedCategories: ICategory[]) => void;
   severitiesChanged?: (selectedSeverities: ISeverity[]) => void;
   statusesChanged?: (selectedStatuses: IStatus[]) => void;
@@ -42,9 +45,8 @@ interface Ft3asFiltersProps {
   onClose: () => void;
 }
 export default function Ft3asFilters(props: Ft3asFiltersProps) {
-  const { categories, severities, status } = props.checklistDoc;
-  const { isOpen } = props;
-
+  const {  severities=[], status=[], waf=[], categories = [] } = props?.checklistDoc ?? {};
+  const { isOpen , filterText=''  } = props;
   const availableTags = categories.map<ITag>((c) => {
     return { key: c.name, name: c.name };
   });
@@ -60,6 +62,14 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     []
   );
 
+  const availableWaf = waf.map<ITag>((w)=> {
+    return {key: w.name , name: w.name}
+  });
+  const [includedWaf, setIncludedWaf] =
+  React.useState<ITag[]>(availableWaf);
+const [excludedWaf, setExcludedWaf] = React.useState<ITag[]>(
+  []
+);
   const availableStatuses = status.map<ITag>((s) => {
     return { key: s.name, name: s.name };
   });
@@ -68,7 +78,7 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
   const [excludedStatuses, setExcludedStatuses] = React.useState<ITag[]>([]);
 
   const [groupingField, setGroupingField] = React.useState<IDropdownOption>(
-    options[0]
+    options[3]
   );
 
   const filterSuggestedCategoryTags = (
@@ -149,6 +159,31 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
       : [];
   };
 
+  const filterSuggestedWafTags = (
+    filterText: string,
+    tagList?: ITag[]
+  ): ITag[] => {
+    return filterText
+      ? availableWaf.filter(
+          (tag) =>
+            tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 &&
+            !listContainsTagList(tag, tagList)
+        )
+      : [];
+  };
+
+  const filterExcludedWafTags = (
+    filterText: string,
+    tagList?: ITag[]
+  ): ITag[] => {
+    return filterText
+      ? excludedWaf.filter(
+          (tag) =>
+            tag.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0 &&
+            !listContainsTagList(tag, tagList)
+        )
+      : [];
+  };
   const onIncludedCategoriesPickerChanged = (items?: ITag[] | undefined) => {
     setIncludedTags([...(items ?? [])]);
 
@@ -243,6 +278,54 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
     }
   };
 
+  
+  const onIncludedWafPickerChanged = (items?: ITag[] | undefined) => {
+    setIncludedWaf([...(items ?? [])]);
+
+    let _excludedWaf: ITag[] = [];
+    setExcludedWaf([]);
+    availableWaf.forEach((tag: ITag) => {
+      if (!listContainsTagList(tag, items)) {
+        _excludedWaf.push(tag);
+      }
+    });
+    setExcludedWaf(_excludedWaf);
+
+    if (props.wafChanged) {
+      props.wafChanged(
+        items?.map<ISeverity>((item) => {
+          return {
+            name: item.name,
+            description: item.name,
+          };
+        }) ?? []
+      );
+    }
+  };
+
+  const onExcludedWafPickerChanged = (items?: ITag[] | undefined) => {
+    setExcludedWaf([...(items ?? [])]);
+
+    let _includedWaf: ITag[] = [];
+    setIncludedWaf([]);
+    availableWaf.forEach((tag: ITag) => {
+      if (!listContainsTagList(tag, items)) {
+        _includedWaf.push(tag);
+      }
+    });
+    setIncludedWaf(_includedWaf);
+
+    if (props.wafChanged) {
+      props.wafChanged(
+        _includedWaf?.map<IWaf>((item) => {
+          return {
+            name: item.name,
+            description: item.name,
+          };
+        }) ?? []
+      );
+    }
+  };
   const onIncludedStatusesPickerChanged = (items?: ITag[] | undefined) => {
     setIncludedStatuses([...(items ?? [])]);
 
@@ -305,14 +388,12 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
   const onGroupChange = (
     event: React.FormEvent<HTMLDivElement>,
     option?: IDropdownOption<any> | undefined,
-    index?: number | undefined
   ): void => {
     if (props.groupChange && option) {
       setGroupingField(option);
       props.groupChange(option);
     }
   };
-
   return (
     <Panel isOpen={isOpen} isBlocking={false} onDismiss={props.onClose}>
       <Dropdown
@@ -324,6 +405,7 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
       />
       <TextField
         label="Filter by name:"
+        value={filterText}
         onChange={_onChangeText}
         readOnly={false}
       />
@@ -405,6 +487,33 @@ export default function Ft3asFilters(props: Ft3asFiltersProps) {
         selectedItems={excludedStatuses}
         getTextFromItem={getTextFromItem}
         onChange={onExcludedStatusesPickerChanged}
+      />
+            <label htmlFor="picker5">Included Waf</label>
+      <TagPicker
+        removeButtonAriaLabel="Remove"
+        selectionAriaLabel="Included Waf"
+        onItemSelected={(selectedItem?: ITag) => {
+          console.debug("seleted item " + selectedItem?.name);
+          return selectedItem ?? null;
+        }}
+        onResolveSuggestions={filterSuggestedWafTags}
+        getTextFromItem={getTextFromItem}
+        pickerSuggestionsProps={{
+          suggestionsHeaderText: "Suggested Waf",
+          noResultsFoundText: "No Waf found",
+        }}
+        selectedItems={includedWaf}
+        onChange={onIncludedWafPickerChanged}
+      />
+
+      <label htmlFor="picker6">Excluded Waf</label>
+      <TagPicker
+        removeButtonAriaLabel="Remove"
+        selectionAriaLabel="Excluded Waf"
+        onResolveSuggestions={filterExcludedWafTags}
+        selectedItems={excludedWaf}
+        getTextFromItem={getTextFromItem}
+        onChange={onExcludedWafPickerChanged}
       />
     </Panel>
   );

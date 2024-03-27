@@ -104,8 +104,19 @@ export default function Ft3asApp() {
         setVisibleStatuses(doc.status);
     }
 
+    const generateFileNameTimeStamp = () => {
+        const date = new Date();
+        const month = (date.getMonth()+1).toString().padStart(2, '0');
+        const currentDate = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+
+        return `${month}${currentDate}${date.getFullYear()}` + '_' + `${hours}${minutes}${seconds}`
+    }
     const downloadFile = (index:number) => {
-        const fileName = `${getChecklistName(index)}.json`;
+        const timeStamp = generateFileNameTimeStamp();
+        const fileName = `AzureDesignReview_${timeStamp}.json`;
         const fileType = 'text/json';
         const data = JSON.stringify(multiChecklistDoc)
 

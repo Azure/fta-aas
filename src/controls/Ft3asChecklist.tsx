@@ -153,13 +153,16 @@ export class Ft3asChecklist extends React.Component<
         onColumnClick: this._onColumnClick,
       },
     ];
-
     this._selection = new Selection({
       onSelectionChanged: () => {
-        this.setState({
-          selectionDetails: this._getSelectionDetails(),
-          currentItem: this._selection.getSelection()[0] as ICheckItemAnswered,
-        });
+        console.log('this._selection.getSelection()' , this._getSelectionDetails())
+        if(this?._selection?.getSelection()?.length<=1)
+        {
+          this.setState({
+            selectionDetails: this._getSelectionDetails(),
+            currentItem: this._selection.getSelection()[0] as ICheckItemAnswered,
+          });
+        }
       },
     });
 
@@ -178,7 +181,7 @@ export class Ft3asChecklist extends React.Component<
       this.props.visibleCategories,
       this.props.visibleSeverities,
       this.props.visibleStatuses,
-      this.props.groupingField?.key.toString(),
+      this.props.groupingField?.key?.toString(),
       columns
     );
     this.state = {
@@ -231,16 +234,16 @@ export class Ft3asChecklist extends React.Component<
     if (groupingField === "severity") {
       visibleSeverities?.forEach((item) => {
         let _count = items.filter(
-          (i) => i.severity.toString() === item.name
+          (i) => i?.severity?.toString() === item?.name
         ).length;
         let _startIndex = items
           .map(function (e) {
-            return e.severity.toString();
+            return e?.severity?.toString();
           })
-          .indexOf(item.name);
+          .indexOf(item?.name);
         groups.push({
-          key: item.name,
-          name: item.name,
+          key: item?.name,
+          name: item?.name,
           startIndex: _startIndex ? _startIndex : 0,
           count: _count ? _count : 0,
           level: 0,
@@ -248,15 +251,15 @@ export class Ft3asChecklist extends React.Component<
       });
     } else if (groupingField === "status") {
       visibleStatuses?.forEach((item) => {
-        let _count = items.filter((i) => i.status?.name === item.name).length;
+        let _count = items.filter((i) => i.status?.name === item?.name).length;
         let _startIndex = items
           .map(function (e) {
             return e.status?.name;
           })
-          .indexOf(item.name);
+          .indexOf(item?.name);
         groups.push({
-          key: item.name,
-          name: item.name,
+          key: item?.name,
+          name: item?.name,
           startIndex: _startIndex ? _startIndex : 0,
           count: _count ? _count : 0,
           level: 0,
@@ -264,15 +267,15 @@ export class Ft3asChecklist extends React.Component<
       });
     } else if ( groupingField === "category"){
       visibleCategories?.forEach((item) => {
-        let _count = items.filter((i) => i.category === item.name).length;
+        let _count = items?.filter((i) => i?.category === item?.name).length;
         let _startIndex = items
           .map(function (e) {
             return e.category;
           })
-          .indexOf(item.name);
+          .indexOf(item?.name);
         groups.push({
-          key: item.name,
-          name: item.name,
+          key: item?.name,
+          name: item?.name,
           startIndex: _startIndex ? _startIndex : 0,
           count: _count ? _count : 0,
           level: 0,
@@ -281,15 +284,15 @@ export class Ft3asChecklist extends React.Component<
     }
     else{
       visibleWaf?.forEach((item) => {
-        let _count = items.filter((i) => i.waf === item.name).length;
+        let _count = items.filter((i) => i?.waf === item?.name).length;
         let _startIndex = items
           .map(function (e) {
             return e.waf;
           })
-          .indexOf(item.name);
+          .indexOf(item?.name);
         groups.push({
-          key: item.name,
-          name: item.name,
+          key: item?.name,
+          name: item?.name,
           startIndex: _startIndex ? _startIndex : 0,
           count: _count ? _count : 0,
           level: 0,
@@ -315,7 +318,7 @@ export class Ft3asChecklist extends React.Component<
       props.visibleCategories,
       props.visibleSeverities,
       props.visibleStatuses,
-      props.groupingField?.key.toString(),
+      props.groupingField?.key?.toString(),
       this.state.columns
     );
     result.groups.forEach((newGroup) => {
@@ -348,18 +351,18 @@ export class Ft3asChecklist extends React.Component<
     filterText?: string
   ): ICheckItemAnswered[] {
     const _filterText = filterText?.toLowerCase();
-    const filteredItemTemp =  items.filter(
+    const filteredItemTemp =  items?.filter(
       (item) =>
       (visibleWaf === undefined ||
-        visibleWaf?.findIndex((c) => c.name === item.waf) !==
+        visibleWaf?.findIndex((c) => c?.name === item.waf) !==
           -1) &&
         (visibleCategories === undefined ||
-          visibleCategories?.findIndex((c) => c.name === item.category) !==
+          visibleCategories?.findIndex((c) => c?.name === item.category) !==
             -1) &&
         (visibleSeverities === undefined ||
           visibleSeverities?.findIndex(
             (s) =>
-              s.name.toLowerCase() === item.severity.toString().toLowerCase()
+              s.name.toLowerCase() === item?.severity?.toString().toLowerCase()
           ) !== -1) &&
         (visibleStatuses === undefined ||
           visibleStatuses?.findIndex(
@@ -372,8 +375,9 @@ export class Ft3asChecklist extends React.Component<
           item.category.toLowerCase().indexOf(_filterText) !== -1 ||
           item.subcategory.toLowerCase().indexOf(_filterText) !== -1 ||
           item.text.toLowerCase().indexOf(_filterText) !== -1 ||
-          item.severity.toString().toLowerCase().indexOf(_filterText) !== -1)
+          item?.severity?.toString().toLowerCase().indexOf(_filterText) !== -1)
     );
+    console.log('ka' , filteredItemTemp , items)
     return filteredItemTemp;
   }
 
@@ -397,7 +401,7 @@ export class Ft3asChecklist extends React.Component<
         this.props.checklistDoc?.categories,
         this.props.checklistDoc?.severities,
         this.props.checklistDoc?.status,
-        this.props.groupingField?.key.toString(),
+        this.props.groupingField?.key?.toString(),
         this.state.columns
       );
       const notAnswered = this.props.checklistDoc?.status[0];
@@ -467,6 +471,10 @@ export class Ft3asChecklist extends React.Component<
       groups,
     } = this.state;
     console.log(this.props)
+    let currentColumns = columns.slice()
+    if(this?.props?.groupingField?.key==='waf' ||!this?.props?.groupingField?.key ){
+      currentColumns.splice(1,1)
+    }
     return (
       <Stack>
         {currentItem ? (
@@ -507,7 +515,7 @@ export class Ft3asChecklist extends React.Component<
                 groupProps={{
                   showEmptyGroups: true,
                 }}
-                columns={columns}
+                columns={currentColumns}
                 selectionMode={SelectionMode.single}
                 getKey={this._getKey}
                 setKey="guid"
@@ -552,10 +560,10 @@ export class Ft3asChecklist extends React.Component<
     column: IColumn
   ): void => {
     let _groupingField = this.props.groupingField
-      ? this.props.groupingField.key.toString()
-      : "category";
+      ? this.props.groupingField?.key?.toString()
+      : "waf";
     const { columns, items } = this.state;
-    const newColumns = setHeader(columns, column.key);
+    const newColumns = setHeader(columns, column.key );
     const newItems = _copyAndSort(
       items,
       _groupingField,
@@ -579,7 +587,6 @@ export class Ft3asChecklist extends React.Component<
         newGroup.isCollapsed = _existingGroupFromState.isCollapsed;
       }
     });
-
     this.setState({
       columns: newColumns,
       items: newItems,
@@ -588,8 +595,8 @@ export class Ft3asChecklist extends React.Component<
   };
 }
 
-function setHeader(columns: IColumn[], column: string) {
-  const newColumns: IColumn[] = columns.slice();
+function setHeader(columns: IColumn[], column: string  ) {
+  let newColumns: IColumn[] =  columns.slice();
   const currColumn: IColumn = newColumns.filter(
     (currCol) => column === currCol.key
   )[0];
@@ -602,7 +609,6 @@ function setHeader(columns: IColumn[], column: string) {
       newCol.isSortedDescending = true;
     }
   });
-
   return newColumns;
 }
 

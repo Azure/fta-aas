@@ -4,9 +4,16 @@ import TelemetryProvider from "../service/telemetry-provider";
 import { getAppInsights } from "../service/TelemetryService";
 import Ft3asApp from "./Ft3asApp";
 import Ft3asHome from "./Ft3asHome";
+import React from "react";
 
 
-
+function RedirectToHome() {
+    const history = useHistory();
+    React.useEffect(() => {
+      history.push('/');
+    }, []);
+    return <></>
+}
 export default function Ft3asNavApp() {
     const appInsightKey = process.env.REACT_APP_APP_INSIGHTS_KEY
     let appInsights = null;
@@ -58,8 +65,9 @@ export default function Ft3asNavApp() {
                     </Stack.Item>
                     <Stack.Item grow>
                         <Switch>
-                            <Route path="/checklist" component={Ft3asApp} />
-                            <Route path="/" component={Ft3asHome} />
+                            <Route exact path="/checklist" component={Ft3asApp} />
+                            <Route exact path="/" component={Ft3asHome} />
+                            <Route path="*" component={RedirectToHome} />
                         </Switch>
                     </Stack.Item>
                 </Stack>

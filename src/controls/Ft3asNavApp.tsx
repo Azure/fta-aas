@@ -19,9 +19,19 @@ export default function Ft3asNavApp() {
     let appInsights = null;
     const history = useHistory();
 
-    const _onLinkClick = (event?: React.MouseEvent<HTMLElement>, item?: INavLink) => {
+    const _onLinkClick = ( item?: INavLink) => {
         if (item) {
-            history.push(item.url);
+            if(item.key==='alz'){
+                window.sessionStorage.setItem('currentChecklist','alz');
+            }
+            if(window.location.pathname === item.url){
+                console.log('yesss' , window.location.pathname , item.url)
+
+            }
+            if(history){
+                history.push(item.url);
+            }
+            
             return false;
             // console.log('navigate to ' + item.url);
             // event?.stopPropagation();            
@@ -44,6 +54,12 @@ export default function Ft3asNavApp() {
                     icon: 'CheckList',
                     key: 'key1',
 
+                },
+                {
+                    name: 'Azure Landing Zone Review',
+                    url: '/checklist',
+                    icon: 'CheckList',
+                    key: 'alz',
                 }
             ],
         },
@@ -56,11 +72,11 @@ export default function Ft3asNavApp() {
                 <Stack horizontal>
                     <Stack.Item>
                         <Nav
-                            onLinkClick={_onLinkClick}
+                            //onLinkClick={_onLinkClick}
                             selectedKey="key3"
                             ariaLabel="FTA as a Service"
                             groups={navLinkGroups}
-                            onRenderLink={(link) => link ? (<Link to={link.url}>{link.name}</Link>) : <></>}
+                            onRenderLink={(link) => link ? (<a onClick={()=>_onLinkClick(link)} >{link.name}</a>) : <></>}
                         />
                     </Stack.Item>
                     <Stack.Item grow>

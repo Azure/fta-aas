@@ -36,6 +36,9 @@ const linkStyle: ILinkStyles = {
 const buttonStyle: IButtonStyles = {
     root: {
         marginTop: '20px',
+        marginRight: '20px',
+        height:'75px',
+        maxWidth:'300px'
     },
     label: {
         fontSize: '20px',
@@ -56,9 +59,14 @@ export default function Ft3asHome() {
                 <Text styles={textStyle}>
                     This tool is crafted by engineers at Microsoft FastTrack for Azure, who have diligently compiled hundreds of best practices spanning various Azure services, making it an invaluable resource for all users.
                 </Text>
+                <div>
+                <CompoundButton primary secondaryText="Start now!" onClick={() => { window.sessionStorage.setItem('currentChecklist','alz'); history.push("/checklist"); return false }} styles={buttonStyle}>
+                Azure Landing Zone Review
+                </CompoundButton>
                 <CompoundButton primary secondaryText="Start now!" onClick={() => history.push("/checklist")} styles={buttonStyle}>
                     Azure Design Review
                 </CompoundButton>
+                </div>
                 <Text styles={textStyle}>
                     Should you have any recommendations for enhancing our checklist items, we warmly invite you to contribute by opening an issue in the <Link styles={linkStyle} href="http://github.com/Azure/review-checklists">Azure Review Checklist GitHub repository</Link>.
                 </Text>

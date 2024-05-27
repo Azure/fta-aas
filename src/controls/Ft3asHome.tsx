@@ -64,9 +64,11 @@ export default function Ft3asHome() {
                 Azure Landing Zone Review
                 </CompoundButton>
                 <CompoundButton primary secondaryText="Start now!" onClick={() => history.push("/checklist")} styles={buttonStyle}>
-                    Azure Design Review
+                    Azure WAF Review
                 </CompoundButton>
                 </div>
+                <p style={{ fontSize: '20px' }}>Watch our <a href="https://youtu.be/jrNfKeGSuCg" target="_blank" rel="noopener noreferrer">Quick Start Video</a> to get started!</p>
+
                 <Text styles={textStyle}>
                     Should you have any recommendations for enhancing our checklist items, we warmly invite you to contribute by opening an issue in the <Link styles={linkStyle} href="http://github.com/Azure/review-checklists">Azure Review Checklist GitHub repository</Link>.
                 </Text>

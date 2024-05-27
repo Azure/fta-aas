@@ -47,20 +47,20 @@ export default function Ft3asNavApp() {
                     icon: 'Home',
                     expandAriaLabel: 'Home',
                     collapseAriaLabel: 'Home',
-                },
-                {
-                    name: 'Azure Design Review',
-                    url: '/checklist',
-                    icon: 'CheckList',
-                    key: 'key1',
-
-                },
-                {
-                    name: 'Azure Landing Zone Review',
-                    url: '/checklist',
-                    icon: 'CheckList',
-                    key: 'alz',
-                }
+                }//,
+                // Commenting out left navigation links for now as its not working when deployed to Azure
+                // {
+                //     name: 'Azure Design Review',
+                //     url: '/checklist',
+                //     icon: 'CheckList',
+                //     key: 'key1',
+                // },
+                // {
+                //     name: 'Azure Landing Zone Review',
+                //     url: '/checklist',
+                //     icon: 'CheckList',
+                //     key: 'alz',
+                // }
             ],
         },
     ];

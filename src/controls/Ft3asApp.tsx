@@ -39,7 +39,7 @@ export default function Ft3asApp() {
     const [isModified, setIsModified] = useState(false);
     const [checklistDoc, setChecklistDoc] = useState<IChecklistDocument>();
     const [multiChecklistDoc, setMultiChecklistDoc] = useState<(IChecklistDocument)[]>();
-
+    const [defaultFilter , setDefaultFilter] = useState<IDropdownOption>();
     const [showSelectTemplate, setShowSelectTemplate] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [percentComplete, setPercentComplete] = useState(0);
@@ -56,9 +56,29 @@ export default function Ft3asApp() {
         }
     });
 
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         let initialDoc : any = ['https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json']
+    //         await changeMultiTemplate(initialDoc);
+    //     }
+    //     fetchData()
+    //         .then(() => console.log('loaded'))
+    //         .catch(reason => {
+    //             console.error(reason);
+    //         })
+    // }, []);
     useEffect(() => {
+        let initialDoc: any = ['https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json']
+        let checklist = window.sessionStorage.getItem('currentChecklist') || ''
+        if (checklist) {
+            initialDoc = [`https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/${checklist}_checklist.en.json`]
+            if(checklist==='alz'){
+               setDefaultFilter({ key: "category", text: "Category" });
+               setGroupingField({ key: "category", text: "Category" })
+            }
+            window.sessionStorage.removeItem('currentChecklist')
+        }
         const fetchData = async () => {
-            let initialDoc : any = ['https://raw.githubusercontent.com/Azure/review-checklists/main/checklists/aks_checklist.en.json']
             await changeMultiTemplate(initialDoc);
         }
         fetchData()
@@ -66,6 +86,8 @@ export default function Ft3asApp() {
             .catch(reason => {
                 console.error(reason);
             })
+
+        
     }, []);
 
     const onTemplateSelected = async (templateUrl?: string) => {
@@ -399,6 +421,7 @@ export default function Ft3asApp() {
                             </>
                                 ))}
                             {multiChecklistDoc?.[0] ? (<Ft3asFilters
+                                defaultFilter={defaultFilter}
                                 isOpen={showFilters}
                                 checklistDoc={multiChecklistDoc?.[0]}
                                 wafChanged={setVisibleWaf}

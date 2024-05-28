@@ -7,6 +7,7 @@ import {
   IDropdownStyles,
 } from "@fluentui/react";
 import * as React from "react";
+import { useEffect } from "react";
 import { ICategory, IChecklistDocument, IWaf } from "../model/IChecklistDocument";
 import { ISeverity } from "../model/ISeverity";
 import { IStatus } from "../model/IStatus";
@@ -33,6 +34,7 @@ const options: IDropdownOption[] = [
 ];
 
 interface Ft3asFiltersProps {
+  defaultFilter?:IDropdownOption,
   checklistDoc?: IChecklistDocument;
   isOpen: boolean;
   filterText?: string;
@@ -45,6 +47,7 @@ interface Ft3asFiltersProps {
   onClose: () => void;
 }
 export default function Ft3asFilters(props: Ft3asFiltersProps) {
+  const {defaultFilter =  { key: "waf", text: "Waf" }} = props
   const {  severities=[], status=[], waf=[], categories = [] } = props?.checklistDoc ?? {};
   const { isOpen , filterText=''  } = props;
   const availableTags = categories.map<ITag>((c) => {
@@ -78,9 +81,10 @@ const [excludedWaf, setExcludedWaf] = React.useState<ITag[]>(
   const [excludedStatuses, setExcludedStatuses] = React.useState<ITag[]>([]);
 
   const [groupingField, setGroupingField] = React.useState<IDropdownOption>(
-    options[3]
   );
-
+  useEffect(()=>{
+    setGroupingField(defaultFilter)
+  },[])
   const filterSuggestedCategoryTags = (
     filterText: string,
     tagList?: ITag[]

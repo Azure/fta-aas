@@ -1,8 +1,11 @@
 # FTA as a Service (fta-aas)
 
 This is the home for https://aka.ms/ftaaas, the self-service tool for Azure Design Reviews!
+
 This is a tool in which the engineers from the Microsoft FastTrack for Azure organization have documented hundreds of best practices across different technologies so that anybody can benefit from them.
+
 If you have any suggestion for any of the checklist items, please raise an issue in the [Azure Review Checklist GitHub repository](http://github.com/Azure/review-checklists).
+
 If you would like to get assistance for your Azure project, check out [FastTrack for Azure](https://azure.microsoft.com/programs/azure-fasttrack/).
 
 ## Application Environments

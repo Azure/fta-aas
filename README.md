@@ -1,3 +1,7 @@
+# IMPORTANT
+
+With the disbanding of the FastTrack for Azure program, this repository is being archived.
+
 # FTA as a Service (fta-aas)
 
 This is the home for https://aka.ms/ftaaas, the self-service tool for Azure Design Reviews!
